@@ -1,0 +1,44 @@
+<h1>Carrito </h1>
+{{#if producto}}
+<div class="vh-100 d-flex justify-content-center align-items-center">
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">Imagen</th>
+        <th scope="col">Nombre</th>
+        <th scope="col">Precio</th>
+        <th scope="col">Cantidad</th>
+        <th scope="col">Subtotal</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{> carritoDetalle}}
+    </tbody>
+
+  </table>
+
+</div>
+
+<button onclick="borrarCarrito()">
+  Borrar todo
+</button>
+
+ {{#if user}}
+ <a href="/pedido/{{idCart}}" class="btn">Generar Orden</a>
+ 
+</button>
+ {{else}}
+<div class="form">
+  <form  >
+    <input name="email" id="email" type="email"  placeholder="email" required />
+    <input name="address" id="address" type="text" placeholder="address" required />
+    <input type="submit" onclick="actualizarCarrito()" value="Continuar Compra" id="submit" />
+  </form>
+</div>
+
+
+ {{/if}}
+{{else}}
+<h2>No hay productos en carrito</h2>
+
+{{/if}}

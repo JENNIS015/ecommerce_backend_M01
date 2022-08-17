@@ -1,0 +1,45 @@
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">
+        Imagen
+      </th>
+      <th scope="col">
+        Nombre
+      </th>
+      <th scope="col">
+        Precio
+      </th>
+      <th scope="col">
+        Cantidad
+      </th>
+    </tr>
+  </thead>
+<tbody>
+   
+{{#each producto}}
+      <tr>
+        <td>
+          <img src="{{foto}}" alt={{nombre}} class="imgTable" />
+        </td>
+
+        <td>
+            {{nombre}}
+        </td>
+
+        <td>
+          ${{precio}}
+        </td>
+
+        <td>
+          x{{cantidad}}
+        </td>
+
+      </tr>
+      
+ {{/each}} 
+ 
+ </tbody>
+</table>
+
+<h2>Total: $ {{total}}</h2>
