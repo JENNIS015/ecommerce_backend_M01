@@ -21,7 +21,7 @@ module.exports = {
     },
   },
   JWT: { SECRET: process.env.PRIVATE_KEY_JWT },
-
+FRONT:process.env.FRONT,
   EMAIL: {
     TEST_EMAIL: process.env.TEST_EMAIL,
     PASS_EMAIL: process.env.PASS_EMAIL,

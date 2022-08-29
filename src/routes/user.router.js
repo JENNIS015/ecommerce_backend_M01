@@ -1,7 +1,6 @@
 const logger = require('../utils/loggers');
 
-const { middleware } = require('../utils/functions'),
-  UserController = require('../controllers/user.controller'),
+const UserController = require('../controllers/user.controller'),
   router = require('express').Router(),
   passport = require('passport'),
   config = require('../utils/config.js'),
@@ -24,14 +23,14 @@ class RouterUser {
 
     router.post(
       '/signup',
-      middleware,
+
       passport.authenticate('local-signup', {
         failureFlash: true,
       }),
       (req, res) => {
         const token = generateJwtToken(req.user);
         res.cookie('jwt', token);
-        res.redirect('/productos');
+        return token;
       }
     );
 
@@ -43,8 +42,9 @@ class RouterUser {
       (req, res) => {
         try {
           const token = generateJwtToken(req.user.toJSON());
+          console.log('token', token);
           res.cookie('jwt', token);
-          res.redirect('/productos');
+              res.status(200).json({ status: true, token: token });
         } catch (err) {
           logger.error('ERROR', err);
         }
@@ -92,7 +92,6 @@ class RouterUser {
     router.get('/profile', requireAuth, this.controlador.renderProfile);
     router.get('/logout', this.controlador.renderLogOut);
     router.put('/profile/:id', requireAuth, this.controlador.editProfile);
-
 
     return router;
   }

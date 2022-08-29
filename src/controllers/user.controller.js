@@ -57,7 +57,7 @@ class UserController {
           address: req.body.address,
           age: req.body.age,
           avatar: req.file.filename,
-          membershipID: 2 //no admin por defecto
+          membershipID: 2, //no admin por defecto
         };
 
         await this.userDAO.guardar(newUserRegister);
@@ -98,6 +98,7 @@ class UserController {
   login = async (req, email, password, done) => {
     try {
       const user = await this.userDAO.mostrarEmail(email);
+      console.log('USER', user);
       if (!user) {
         done(null, false, {
           message: 'No existe el correo registrado',
@@ -105,6 +106,7 @@ class UserController {
       } else {
         bcrypt.compare(password, user.password, function (err, result) {
           if (result == true) {
+            console.log('INGRESO ok');
             return done(null, user);
           } else {
             done(null, false, {

@@ -1,4 +1,5 @@
 function isAdmin(req, res, next) {
+  console.log('ISADMIN',req.user);
   if (req.isAuthenticated() && req.user.membershipID === 1) {
     return next();
   }

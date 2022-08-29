@@ -8,12 +8,20 @@ class ProductDTO {
     this.precio = productos.precio;
     this.stock = productos.stock;
     this.color = productos.color;
+    this.precioOferta = productos.precioOferta;
+    this.fechaOferta = productos.fechaOferta;
+    this.alto = productos.alto;
+    this.largo = productos.largo;
+    this.profundidad = productos.profundidad;
+    this.peso = productos.peso;
+     this.modificado = new Date().toJSON().slice(0, 10);;
   }
 
-  getProductsAll = async () => {
-    return (
-      this.id, this.nombre, this.foto, this.categoria, this.precio, this.color
-    );
-  };
+  // getProductsAll = async () => {
+  //   return (
+  //     this.id, this.nombre, this.foto, this.categoria, this.precio, this.color
+  //   );
+  // };
 }
+
 module.exports = ProductDTO;

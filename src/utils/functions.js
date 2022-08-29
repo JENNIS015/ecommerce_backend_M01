@@ -1,30 +1,18 @@
-const  multer = require('multer')
+const multer = require('multer');
+// SET STORAGE
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, './public/uploads');
+  },
+  filename: function (req, file, cb) {
+    let originalname = file.originalname;
+    let extension = originalname.split('.');
+    filename = Date.now() + '.' + extension[extension.length - 1];
 
-function middleware(req, res, next) {
-  let imageName;
+    cb(null, filename);
+  },
+});
+ 
+var upload = multer({ storage: storage })
 
-  let uploadStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-      cb(null, './public/uploads');
-    },
-    filename: function (req, file, cb) {
-      let originalname = file.originalname;
-      let extension = originalname.split('.');
-      filename = Date.now() + '.' + extension[extension.length - 1];
-
-      cb(null, filename);
-    },
-  });
-
-  let upload = multer({ storage: uploadStorage });
-  let uploadFile = upload.single('avatar');
-
-  uploadFile(req, res, function (err) {
-    req.imageName = imageName;
-    req.uploadError = err;
-
-    next();
-  });
-}
-
-module.exports = { middleware };
+module.exports = { upload };

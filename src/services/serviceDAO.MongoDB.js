@@ -36,7 +36,9 @@ class ServiceDAOMongoDB {
       this.message.errorInternalServer(error, `Error al guardar`);
     } finally {
       this.message.infoSimple('****Elemento guardado****');
+        this.message.infoSimple(`Producto guardado:${JSON.stringify(body)}`);
     }
+    
   };
 
   eliminar = async (condicion, id) => {

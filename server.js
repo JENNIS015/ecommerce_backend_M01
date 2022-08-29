@@ -15,14 +15,14 @@ const express = require('express'),
   mongoose = require('mongoose'),
   cookie = require('cookie'),
   config = require('./src/utils/config');
-
+fileUpload = require('express-fileupload');
 
 const app = express();
 const { Server: HttpServer } = require('http');
+const multer = require('multer');
 const { Server: IOServer } = require('socket.io');
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
- 
 
 const RouterProduct = require('./src/routes/products.router'),
   RouterCart = require('./src/routes/cart.router'),
@@ -31,7 +31,7 @@ const RouterProduct = require('./src/routes/products.router'),
   RouterEmail = require('./src/routes/email.router'),
   RouterViews = require('./src/routes/views.router'),
   RouterChat = require('./src/routes/chat.router'),
- chatSocket = require('./src/controllers/chatSocket');
+  chatSocket = require('./src/controllers/chatSocket');
 
 app.use(compression());
 app.use(morgan('tiny'));
@@ -48,10 +48,15 @@ app.engine(
 app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, 'public/views'));
 app.use(express.static('public'));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 })
+);
+app.use(express.json({ limit: '50mb', extended: true, parameterLimit: 50000 }));
+
 /****  Configurando el cors de forma dinamica */
 if (config.SERVER.entorno == 'development') {
   app.use(cors());
@@ -98,7 +103,30 @@ app.use((req, res, next) => {
 });
 
 
+    const storage = multer.diskStorage({
+      destination: (req, file, cb) => {
+        cb(null, path);
+      },
+      filename: (req, file, cb) => {
+        cb(null, uuid.v4().toString() + '_' + file.originalname);
+      },
+    });
 
+    const fileFilter = (req, file, cb) => {
+      if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+        cb(null, true);
+      } else {
+        cb('Type file is not access', false);
+      }
+    };
+
+    const upload = multer({
+      storage,
+      fileFilter,
+      limits: 1024 * 1024 * 5,
+    });
+
+    app.use(morgan('dev'));
 io.use(function (socket, next) {
   try {
     var data = socket.handshake || socket.request;
@@ -133,7 +161,6 @@ io.use(function (socket, next) {
 
 chatSocket(io);
 
-
 app.use('/', new RouterViews().start());
 
 app.use('/', new RouterUser().start());
@@ -150,7 +177,6 @@ process.on('SIGINT', function () {
     process.exit(0);
   });
 });
-
 
 /* ---------------------- Servidor ----------------------*/
 

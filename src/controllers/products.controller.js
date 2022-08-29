@@ -2,6 +2,7 @@ const ProductDTO = require('../classes/Products/ProductsDTO.class'),
   ProductDAOFactory = require('../classes/Products/ProductDAOFactory.class'),
   APICustom = require('../classes/Error/customError');
 
+const { upload } = require('../utils/functions');
 class ProductsController {
   constructor() {
     this.ProductsDAO = ProductDAOFactory.get();
@@ -30,6 +31,7 @@ class ProductsController {
 
   productCategory = async (id) => {
     try {
+
       const docs = await this.ProductsDAO.mostrarCategoria(id);
       const productos = docs.map((p) => {
         return new ProductDTO(p);
@@ -71,9 +73,11 @@ class ProductsController {
 
   saveProducts = async (req, res) => {
     try {
-      await this.ProductsDAO.guardar(req.body);
+
+      const file_names = req.files.map((file) => file.filename);
+      await this.ProductsDAO.guardar({ ...req.body, foto: file_names });
       res.status(200).json({ status: true, result: 'Producto Guardado' });
-    } catch {
+    } catch (error) {
       this.message.errorInternalServer(
         error,
         'No se ha podido guardar el producto'
@@ -82,18 +86,16 @@ class ProductsController {
   };
 
   deleteProduct = async (req, res) => {
-    if (admin == true) {
-      await this.ProductsDAO.eliminar('id', req.params.id)
-        .then(() => {
-          res.status(200).send('Status: Producto Eliminado');
-        })
-        .catch((error) =>
-          this.message.errorInternalServer(
-            error,
-            ' No se ha podido eliminar producto'
-          )
-        );
-    }
+    await this.ProductsDAO.eliminar('id', req.params.id)
+      .then(() => {
+        res.status(200).send('Status: Producto Eliminado');
+      })
+      .catch((error) =>
+        this.message.errorInternalServer(
+          error,
+          ' No se ha podido eliminar producto'
+        )
+      );
   };
 
   formEditProduct = async (req, res) => {
