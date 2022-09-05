@@ -100,6 +100,7 @@ passport.use(
       secretOrKey: config.JWT.SECRET,
     },
     (jwtPayload, done) => {
+        console.log('jwtPayload', jwtPayload);
       if (!jwtPayload) {
         logger.error('error in jtw');
         return done('No token found...');

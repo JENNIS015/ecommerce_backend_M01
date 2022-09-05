@@ -4,9 +4,9 @@ const UserController = require('../controllers/user.controller'),
   router = require('express').Router(),
   passport = require('passport'),
   config = require('../utils/config.js'),
-  jwt = require('jsonwebtoken'),
-  requireAuth = passport.authenticate('jwt', { session: false });
-
+  jwt = require('jsonwebtoken') 
+  
+ 
 class RouterUser {
   constructor() {
     this.controlador = new UserController();
@@ -14,6 +14,14 @@ class RouterUser {
 
   start() {
     require('../passport/local-auth');
+    const ensureAuthenticated=(req, res, next) =>{
+      if (ensureAuthenticated) {
+        return next();
+      } else {
+        res.redirect('/');
+      }
+    }
+
     const generateJwtToken = (user) => {
       const token = jwt.sign(user, config.JWT.SECRET, {
         expiresIn: '1d',
@@ -85,13 +93,13 @@ class RouterUser {
       }
     );
 
-    router.get('/', requireAuth, (req, res) => {
+    router.get('/', ensureAuthenticated, (req, res) => {
       res.render('index', { user: req.user });
     });
 
-    router.get('/profile', requireAuth, this.controlador.renderProfile);
+    router.get('/profile', ensureAuthenticated, this.controlador.renderProfile);
     router.get('/logout', this.controlador.renderLogOut);
-    router.put('/profile/:id', requireAuth, this.controlador.editProfile);
+    router.put('/profile/:id', ensureAuthenticated, this.controlador.editProfile);
 
     return router;
   }

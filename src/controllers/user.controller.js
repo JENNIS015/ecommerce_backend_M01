@@ -9,7 +9,8 @@ class UserController {
     this.message = new APICustom();
   }
   renderProfile = async (req, res) => {
-    const email = req.user.email ? req.user.email : req.user._json.email;
+    console.log(req.params);
+    //const email = req.user.email ? req.user.email : req.user._json.email;
     try {
       const usuario = await this.userDAO.mostrarEmail(email);
       res.render('profile', { usuario: usuario.toJSON(), title: 'Perfil' });

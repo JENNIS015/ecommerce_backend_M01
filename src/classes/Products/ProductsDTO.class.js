@@ -8,8 +8,8 @@ class ProductDTO {
     this.precio = productos.precio;
     this.stock = productos.stock;
     this.color = productos.color;
-    this.precioOferta = productos.precioOferta;
-    this.fechaOferta = productos.fechaOferta;
+    this.oferta = productos.oferta;
+    this.fecha = productos.fecha;
     this.alto = productos.alto;
     this.largo = productos.largo;
     this.profundidad = productos.profundidad;

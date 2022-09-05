@@ -129,7 +129,7 @@ class ServiceDAOMongoDB {
       await this.conn.connect();
 
       let doc = await this.coleccion.updateOne({ _id: id }, { $set: body });
-
+console.log(id, body)
       return doc;
     } catch (error) {
       this.message.errorInternalServer(error, `Error al actualizar`);

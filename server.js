@@ -15,11 +15,11 @@ const express = require('express'),
   mongoose = require('mongoose'),
   cookie = require('cookie'),
   config = require('./src/utils/config');
-fileUpload = require('express-fileupload');
+
 
 const app = express();
 const { Server: HttpServer } = require('http');
-const multer = require('multer');
+ 
 const { Server: IOServer } = require('socket.io');
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
@@ -59,7 +59,14 @@ app.use(express.json({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 
 /****  Configurando el cors de forma dinamica */
 if (config.SERVER.entorno == 'development') {
-  app.use(cors());
+  app.use(
+ 
+      cors({
+        origin: 'http://localhost:3000',
+        credentials: true,
+      })
+    
+  );
 } else {
   app.use(
     cors({
@@ -101,32 +108,9 @@ app.use((req, res, next) => {
   res.locals.session = req.session;
   next();
 });
-
-
-    const storage = multer.diskStorage({
-      destination: (req, file, cb) => {
-        cb(null, path);
-      },
-      filename: (req, file, cb) => {
-        cb(null, uuid.v4().toString() + '_' + file.originalname);
-      },
-    });
-
-    const fileFilter = (req, file, cb) => {
-      if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-        cb(null, true);
-      } else {
-        cb('Type file is not access', false);
-      }
-    };
-
-    const upload = multer({
-      storage,
-      fileFilter,
-      limits: 1024 * 1024 * 5,
-    });
-
-    app.use(morgan('dev'));
+ 
+ 
+app.use(morgan('dev'));
 io.use(function (socket, next) {
   try {
     var data = socket.handshake || socket.request;
