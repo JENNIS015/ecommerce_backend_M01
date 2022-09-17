@@ -60,12 +60,10 @@ app.use(express.json({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 /****  Configurando el cors de forma dinamica */
 if (config.SERVER.entorno == 'development') {
   app.use(
- 
-      cors({
-        origin: 'http://localhost:3000',
-        credentials: true,
-      })
-    
+    cors({
+      origin: [config.FRONT, 'http://localhost:3001'],
+      credentials: true,
+    })
   );
 } else {
   app.use(
@@ -144,10 +142,10 @@ io.use(function (socket, next) {
 });
 
 chatSocket(io);
-
+app.use('/', new RouterUser().start());
 app.use('/', new RouterViews().start());
 
-app.use('/', new RouterUser().start());
+
 app.use('/api/productos', new RouterProduct().start());
 app.use('/template/email', new RouterEmail().start());
 app.use('/chat', new RouterChat().start());

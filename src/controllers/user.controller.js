@@ -1,22 +1,25 @@
 const bcrypt = require('bcrypt'),
   APICustom = require('../classes/Error/customError'),
   sendEmail = require('../notificaciones/emails/Registration/newUser'),
-  UserFactory = require('../classes/User/UserFactory.class');
-
+  UserFactory = require('../classes/User/UserFactory.class'),
+  jwt = require('jsonwebtoken'),
+  config = require('../utils/config'),
+  passwordChange = require('../notificaciones/emails/Login/passwordChange'),
+  sendNewPasswordEmail = require('../notificaciones/emails/Login/forgotPassword');
 class UserController {
   constructor() {
     this.userDAO = UserFactory.get();
     this.message = new APICustom();
   }
   renderProfile = async (req, res) => {
-    console.log(req.params);
-    //const email = req.user.email ? req.user.email : req.user._json.email;
-    try {
-      const usuario = await this.userDAO.mostrarEmail(email);
-      res.render('profile', { usuario: usuario.toJSON(), title: 'Perfil' });
-    } catch (error) {
-      this.message.errorInternalServer(error, 'error al obtener perfik');
-    }
+    await this.userDAO
+      .mostrarEmail(req.params.id)
+      .then((result) => {
+        res.status(200).json({ data: result });
+      })
+      .catch((error) => {
+        this.message.errorInternalServer(error, 'error al obtener perfil');
+      });
   };
 
   renderLogOut = (req, res, next) => {
@@ -74,20 +77,25 @@ class UserController {
     const user = await this.userDAO.mostrarEmail(email);
     return user;
   };
-
+  getUsers = async (req, res) => {
+    const docs = await this.userDAO.mostrarTodos();
+    return res.status(200).json({ users: docs });
+  };
   editProfile = async (req, res) => {
     const id = req.params.id;
-
-    const nuevoDatos = {
-      name: req.body.name,
-      lastName: req.body.lastName,
-      address: req.body.address,
-      age: req.body.age,
-      phone: req.body.phone,
-    };
-
+    let datos = req.body;
+    console.log('datos', datos);
     try {
-      const newUser = await this.userDAO.actualizarPorEmail(id, nuevoDatos);
+      if (datos.password) {
+        let newPassword = bcrypt.hashSync(
+          req.body.password,
+          bcrypt.genSaltSync(5),
+          null
+        );
+        console.log('newPassword', newPassword);
+        datos = { password: newPassword };
+      }
+      const newUser = await this.userDAO.actualizarPorEmail(id, datos);
 
       res.status(200).json({ Perfil_actualizado: newUser });
     } catch (error) {
@@ -96,146 +104,151 @@ class UserController {
     }
   };
 
-  login = async (req, email, password, done) => {
+  forgot = async (req, res) => {
+    let user = await this.userDAO.mostrarEmail(req.body.email);
+
+    if (!user) {
+      res.status(422).json({
+        errors: [{ title: 'Invalid email!', detail: 'User does not exist' }],
+      });
+    } else {
+      const token = jwt.sign(
+        {
+          userId: user.id,
+          email: user.email,
+        },
+        config.JWT.SECRET,
+        { expiresIn: '1h' }
+      );
+
+      user.resetPasswordToken = token;
+      user.resetPasswordExpires = Date.now() + 3600000;
+      res.status(200).json({
+        errors: [
+          {
+            title: 'Correo Enviado',
+            detail: 'Se ha enviado el correo para restablecer',
+          },
+        ],
+      });
+      console.log('user', user);
+      await this.userDAO.actualizarPorEmail(user.email, user);
+      sendNewPasswordEmail(token);
+    }
+  };
+
+  checkToken = async (req, res) => {
+    let user = await this.userDAO.buscarCondicionBody({
+      resetPasswordToken: req.params.token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+    console.log(user);
+    if (!user) {
+      return res.status(422).send({
+        errors: [
+          {
+            title: 'El token se ha vencido o no existe.',
+            detail: ' Restaure la contraseña nuevamente',
+          },
+        ],
+      });
+    } else {
+      return res.status(200).send({ token: req.params.token });
+    }
+  };
+
+  updatePassword = async (req, res) => {
+    let user = await this.userDAO.buscarCondicionBody({
+      resetPasswordToken: req.params.token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+    console.log(user);
+    if (!user) {
+      `enter code here`;
+      return res.status(422).send({
+        errors: [
+          {
+            title: 'error',
+            detail: 'Password reset token is invalid or has expired',
+          },
+        ],
+      });
+    }
+    if (req.body.password === req.body.confirm) {
+      console.log(req.body);
+      let newPassword = bcrypt.hashSync(
+        req.body.password,
+        bcrypt.genSaltSync(5),
+        null
+      );
+      user.password = newPassword;
+      user.resetPasswordToken = undefined;
+      user.resetPasswordExpires = undefined;
+
+      await this.userDAO.guardar(user);
+      passwordChange(user.email);
+    } else {
+      return res.status(422).send({
+        errors: [{ title: 'error', detail: 'Password do not match' }],
+      });
+    }
+  };
+
+  deleteUser = async (req, res) => {
+    console.log(req.params.id);
     try {
-      const user = await this.userDAO.mostrarEmail(email);
-      console.log('USER', user);
-      if (!user) {
-        done(null, false, {
-          message: 'No existe el correo registrado',
-        });
-      } else {
-        bcrypt.compare(password, user.password, function (err, result) {
-          if (result == true) {
-            console.log('INGRESO ok');
-            return done(null, user);
-          } else {
-            done(null, false, {
-              message: 'Contraseña incorrecta',
-            });
-          }
-        });
-      }
+      await this.userDAO.eliminar('email', req.params.id);
+      res.status(200).json('Elemento eliminado');
     } catch (error) {
-      const mensaje = 'Error al iniciar sesion';
+      const mensaje = 'Error al borrar usuario';
       this.message.errorInternalServer(error, mensaje);
     }
   };
 
-  //CHAT
-  addChannel = function (req, res, next) {
-    const channelToAdd = req.body.createInput;
-    const username = req.user.username;
+  login = (req, res) => {
+    return async (email, password, done) => {
+      try {
+        const user = await this.userDAO.mostrarEmail(email);
 
-    User.findOne({ username }, function (err, user) {
-      if (err) {
-        res.send({
-          error: err,
-        });
-        return next(err);
-      }
-
-      if (!user) {
-        return res.status(422).json({
-          error: 'Could not find user.',
-        });
-      }
-
-      // This prevents the user from joining duplicate channels
-      if (user.usersChannels.indexOf(channelToAdd) == -1) {
-        user.usersChannels.push(channelToAdd);
-      } else {
-        return res.status(422).json({
-          error: 'Already joined that channel.',
-        });
-      }
-
-      user.save(function (err, updatedUser) {
-        if (err) {
-          res.send({
-            error: err,
+        if (!user) {
+          done(null, false, {
+            errors: [{ title: 'error', detail: 'Password do not match' }],
           });
-          return next(err);
-        }
+        } else {
+          bcrypt.compare(password, user.password).then((isMatch) => {
+            if (isMatch) {
+              const payload = {
+                id: user.id,
+                name: user.name,
+                avatar: user.avatar,
+              };
+              jwt.sign(
+                payload,
+                'secret',
+                {
+                  expiresIn: 3600,
+                },
+                (err, token) => {
+                  if (err) console.error('There is some error in token', err);
+                  console.log('OKA');
 
-        res.status(200).json({
-          message: 'Successfully joined channel.',
-          channels: user.usersChannels,
-        });
-      });
-    });
-  };
-
-  // Takes a channel name and username
-  // If a user is found, it looks through the user's usersChannel array
-  // The request channel to remove is filtered from the array and the user's info is saved again
-  // Returns the new usersChannel array in the json response
-  removeChannel = function (req, res, next) {
-    const channelName = req.body.channel;
-    const username = req.user.username;
-
-    User.findOne({ username }, function (err, user) {
-      if (err) {
-        res.send({
-          error: err,
-        });
-        return next(err);
-      }
-
-      if (!user) {
-        return res.status(422).json({
-          error: 'Could not find user.',
-        });
-      }
-
-      // Removes the channel that was requested
-      const removedChannel = user.usersChannels.filter(function (channel) {
-        return channel !== channelName;
-      });
-
-      user.usersChannels = removedChannel;
-
-      user.save(function (err, updatedUser) {
-        if (err) {
-          res.send({
-            error: err,
+                  res
+                    .status(200)
+                    .json({ success: true, token: `Bearer ${token}` });
+                }
+              );
+            } else {
+              done(null, false, {
+                errors: [{ title: 'error', detail: 'Password do not match' }],
+              });
+            }
           });
-          return next(err);
         }
-
-        res.status(200).json({
-          message: `Removed channel: ${channelName}`,
-          updatedChannels: user.usersChannels,
-        });
-      });
-    });
-  };
-
-  // Given a username
-  // Looks through Users for the username
-  // If it can find a user, it returns all their current userChannels in a json response
-  getChannels = function (req, res, next) {
-    const username = req.user.username;
-
-    User.findOne({ username }, function (err, user) {
-      if (err) {
-        res.send({
-          error: err,
-        });
-        return next(err);
+      } catch (error) {
+        const mensaje = 'Error al iniciar sesion';
+        return this.message.errorAuth(error, mensaje);
       }
-
-      if (!user) {
-        return res.status(422).json({
-          error: 'Could not find user.',
-        });
-      }
-
-      res.status(200).json({
-        message: 'Here are the users channels',
-        usersChannels,
-      });
-    });
+    };
   };
 }
 

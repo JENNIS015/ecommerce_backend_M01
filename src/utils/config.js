@@ -21,12 +21,13 @@ module.exports = {
     },
   },
   JWT: { SECRET: process.env.PRIVATE_KEY_JWT },
-FRONT:process.env.FRONT,
+  FRONT: process.env.FRONT,
+  BACKEND_URL: process.env.BACKEND_URL + parseInt(process.env.PORT) || 8080,
   EMAIL: {
     TEST_EMAIL: process.env.TEST_EMAIL,
     PASS_EMAIL: process.env.PASS_EMAIL,
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
-    CHAT_ADMIN_EMAIL: process.env.CHAT_ADMIN_EMAIL || 'admin@test.com'
+    CHAT_ADMIN_EMAIL: process.env.CHAT_ADMIN_EMAIL || 'admin@test.com',
   },
   TWILO: {
     AUTH_TOKEN: process.env.AUTH_TOKEN,
@@ -54,5 +55,8 @@ FRONT:process.env.FRONT,
     modoCluster: process.env.MODO_CLUSTER == 'CLUSTER',
     logger: 'DEV',
     entorno: process.env.NODE_ENV || 'development',
+  },
+  ML: {
+    token: process.env.ML_TOKEN,
   },
 };

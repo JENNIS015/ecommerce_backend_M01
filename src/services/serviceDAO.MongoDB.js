@@ -36,9 +36,8 @@ class ServiceDAOMongoDB {
       this.message.errorInternalServer(error, `Error al guardar`);
     } finally {
       this.message.infoSimple('****Elemento guardado****');
-        this.message.infoSimple(`Producto guardado:${JSON.stringify(body)}`);
+      this.message.infoSimple(`Producto guardado:${JSON.stringify(body)}`);
     }
-    
   };
 
   eliminar = async (condicion, id) => {
@@ -71,6 +70,7 @@ class ServiceDAOMongoDB {
     try {
       await this.conn.connect();
       let doc = await this.coleccion.findOne({ email: email });
+      console.log(doc)
       return doc;
     } catch (error) {
       this.message.errorInternalServer(error, `Error al mostrar email`);
@@ -79,6 +79,17 @@ class ServiceDAOMongoDB {
     }
   };
 
+  buscarCondicionBody = async (body) => {
+    try {
+      await this.conn.connect();
+      let doc = await this.coleccion.findOne(body);
+      return doc;
+    } catch (error) {
+      this.message.errorInternalServer(error, `Error al mostrar email`);
+    } finally {
+      this.message.infoSimple('****Mostrar por Email****');
+    }
+  };
   mostrarByEmail = async (id) => {
     try {
       await this.conn.connect();
@@ -129,7 +140,7 @@ class ServiceDAOMongoDB {
       await this.conn.connect();
 
       let doc = await this.coleccion.updateOne({ _id: id }, { $set: body });
-console.log(id, body)
+      console.log(id, body);
       return doc;
     } catch (error) {
       this.message.errorInternalServer(error, `Error al actualizar`);

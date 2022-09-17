@@ -17,11 +17,14 @@ const OrderSchema = mongoose.Schema({
       nombre: String,
       cantidad: Number,
       precio: Number,
-      _id: { type: mongoose.Types.ObjectId }
+      _id: { type: mongoose.Types.ObjectId },
     },
   ],
+  shippingAddress: String,
+  status: String,
   total: Number,
   timestamps: String,
+  orderStatus:String
 });
  
 const OrderModel = mongoose.model('orders', OrderSchema);

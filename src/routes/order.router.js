@@ -10,7 +10,10 @@ class RouterOrder {
   start() {
     router.get('/gracias', this.controlador.renderThanks);
     router.get('/:id', this.controlador.getOrderById);
-    router.post('/:id', this.controlador.postOrder);
+    router.put('/:id', this.controlador.updateById);
+    router.delete('/:id', this.controlador.deleteById);
+    router.get('/', this.controlador.getOrders);
+    router.post('/', this.controlador.postOrder);
     return router;
   }
 }

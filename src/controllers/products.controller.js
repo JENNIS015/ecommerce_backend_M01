@@ -71,8 +71,6 @@ class ProductsController {
   };
 
   saveProducts = async (req, res) => {
- 
-
     await this.ProductsDAO.guardar({
       ...req.body,
       foto: req.files,
@@ -116,15 +114,36 @@ class ProductsController {
   editProductImagen = async (req, res) => {
     const id = req.params.id;
     const body = req.body;
- 
+
     try {
-      const newDetail=await this.ProductsDAO.actualizar(id, { foto: body.dataObj });
+      const newDetail = await this.ProductsDAO.actualizar(id, {
+        foto: body.dataObj,
+      });
       console.log(body.dataObj);
       fs.unlink('./public/uploads/' + body.filename, function (err, result) {
         if (err) console.log('error', err);
       });
     } catch (err) {
       this.message.errorNotFound(err, 'Error al eliminar foto producto');
+    }
+  };
+
+  discountStock = async (req, res) => {
+    const body = req.body;
+    console.log('BODY', body);
+    try {
+      let doc = await this.ProductsDAO.mostrarId(body.id);
+      let newStock = doc.stock - body.cantidad;
+      console.log('doc.stock', doc.stock);
+      console.log('newStock', newStock);
+      await this.ProductsDAO.actualizar(body.id, { stock: newStock });
+
+
+    } catch (error) {
+      this.message.errorInternalServer(
+        error,
+        ' No se ha podido editar producto'
+      );
     }
   };
   formEditProduct = async (req, res) => {

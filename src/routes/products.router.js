@@ -27,6 +27,7 @@ class RouterProduct {
       fileSizeLimitErrorHandler,
       this.controlador.editProduct
     );
+       router.put('/stock', this.controlador.discountStock);
 
     return router;
   }

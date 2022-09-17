@@ -26,14 +26,17 @@ class CartController {
 
   
   postCart = async (req, res) => {
+    console.log("CART",req)
     let buyerEmail = req.user ? req.user.email : '';
     let address = req.user ? req.user.address : '';
+
     try {
       const items = [];
       const buyerID = buyerEmail;
       const total = 0;
       const timestamps = new Date().toLocaleString();
       const shippingAddress = address;
+       
 
       const carritoGuardado = new CartDTO(
         shippingAddress,

@@ -23,7 +23,8 @@ const UserSchema = mongoose.Schema({
   phone: { type: String, require: false },
   avatar: { type: String, require: false },
   membershipID: { type: Number, require: false },
-
+  resetPasswordToken: { type: String, require: false },
+  resetPasswordExpires: { type: String, require: false },
 });
 
 const UserModel = mongoose.model('user', UserSchema);

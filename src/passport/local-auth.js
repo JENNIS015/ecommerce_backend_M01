@@ -82,7 +82,7 @@ passport.use(
       usernameField: 'email',
       passwordField: 'password',
       passReqToCallback: true,
-    },
+    }, 
     userController.login
   )
 );

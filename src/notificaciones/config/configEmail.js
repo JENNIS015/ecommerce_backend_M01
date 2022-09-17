@@ -30,8 +30,9 @@ function send(templateFile, subject, info) {
       html: body,
     };
     await transporter.sendMail(mailOptions, function (error, info) {
-      if (error) logger.error('Error al enviar email', error);
       logger.info('Email Enviado', info);
+      if (error) logger.error('Error al enviar email', error);
+      
     });
   });
 }

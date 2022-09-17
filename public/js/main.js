@@ -183,65 +183,65 @@ function changeImage(input) {
 }
 
 /* ---------------------- Order ----------------------*/
-function checkOrder() {
-  let email = document.getElementById('email').value;
-  let name = document.getElementById('name').value;
-  let lastName = document.getElementById('lastName').value;
-  let address = document.getElementById('address').value;
-  let phone = document.getElementById('phone').value;
+// function checkOrder() {
+//   let email = document.getElementById('email').value;
+//   let name = document.getElementById('name').value;
+//   let lastName = document.getElementById('lastName').value;
+//   let address = document.getElementById('address').value;
+//   let phone = document.getElementById('phone').value;
 
-  if (
-    (email != '') |
-    (name != '') |
-    (lastName != '') |
-    (address != '') |
-    (phone != '')
-  ) {
-    document.getElementById('submit').disabled = false;
-    document.getElementById('message').innerHTML = ' ';
-  } else {
-    document.getElementById('submit').disabled = true;
-    document.getElementById('message').innerHTML = 'Campos incompletos';
-  }
-}
+//   if (
+//     (email != '') |
+//     (name != '') |
+//     (lastName != '') |
+//     (address != '') |
+//     (phone != '')
+//   ) {
+//     document.getElementById('submit').disabled = false;
+//     document.getElementById('message').innerHTML = ' ';
+//   } else {
+//     document.getElementById('submit').disabled = true;
+//     document.getElementById('message').innerHTML = 'Campos incompletos';
+//   }
+// }
 
-async function actualizarOrder() {
-  let email = document.getElementById('email').value;
-  let name = document.getElementById('name').value;
-  let lastName = document.getElementById('lastName').value;
-  let address = document.getElementById('address').value;
-  let phone = document.getElementById('phone').value;
+// async function actualizarOrder() {
+//   let email = document.getElementById('email').value;
+//   let name = document.getElementById('name').value;
+//   let lastName = document.getElementById('lastName').value;
+//   let address = document.getElementById('address').value;
+//   let phone = document.getElementById('phone').value;
 
-  const idCart = window.localStorage.getItem('my_token');
-  await fetch(`/api/pedido/${idCart}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      email,
-      name,
-      lastName,
-      address,
-      phone,
-    }),
-  })
-    .then(function (response) {
-      if (response) {
-        fetch(`/api/carrito/${idCart}`, {
-          method: 'DELETE',
-        });
-        window.location.href = `/api/pedido/gracias`;
-      }
-    })
+//   const idCart = window.localStorage.getItem('my_token');
+//   await fetch(`/api/pedido/${idCart}`, {
+//     method: 'POST',
+//     headers: { 'Content-Type': 'application/json' },
+//     body: JSON.stringify({
+//       email,
+//       name,
+//       lastName,
+//       address,
+//       phone,
+//     }),
+//   })
+//     .then(function (response) {
+//       if (response) {
+//         fetch(`/api/carrito/${idCart}`, {
+//           method: 'DELETE',
+//         });
+//         window.location.href = `/api/pedido/gracias`;
+//       }
+//     })
 
-    .catch((error) => {
-      //  console.log(error);
-    })
+//     .catch((error) => {
+//       //  console.log(error);
+//     })
 
-    .finally(() => {
-      window.location.href = `/api/pedido/gracias`;
-      localStorage.removeItem('my_token');
-    });
-}
+//     .finally(() => {
+//       window.location.href = `/api/pedido/gracias`;
+//       localStorage.removeItem('my_token');
+//     });
+// }
 
 //login
 function check_pass() {

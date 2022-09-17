@@ -19,6 +19,24 @@ class APICustom {
       code: 401,
     };
   };
+  errorAuth = (error, mensaje) => {
+    logger.error(mensaje, error);
+    return {
+      success: false,
+      message: 'Error acceso',
+      customMessage: mensaje,
+      code: 401,
+    };
+  };
+  errorInvalid = () => {
+ 
+    return {
+      success: false,
+      message: 'Error acceso',
+ 
+      code: 422,
+    };
+  };
 
   errorServer = (error, mensaje) => {
     logger.error(error, mensaje);
