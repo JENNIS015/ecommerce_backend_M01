@@ -97,7 +97,7 @@ class ProductsController {
           fs.unlink(
             './public/uploads/' + product.foto[i].filename,
             function (err, result) {
-              if (err) console.log('error', err);
+            
             }
           );
         }

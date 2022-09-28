@@ -59,7 +59,7 @@ class OrderController {
     }
   };
   postOrder = async (req, res, done) => {
-    console.log('A', req.body);
+ 
     try {
       const body = req.body;
 

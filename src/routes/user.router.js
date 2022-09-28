@@ -1,7 +1,5 @@
-const APICustom = require('../classes/Error/customError');
-const logger = require('../utils/loggers');
-
-const UserController = require('../controllers/user.controller'),
+const APICustom = require('../classes/Error/customError'),
+  UserController = require('../controllers/user.controller'),
   router = require('express').Router(),
   passport = require('passport'),
   config = require('../utils/config.js'),
@@ -32,7 +30,6 @@ class RouterUser {
 
     router.post(
       '/signup',
-
       passport.authenticate('local-signup', {
         failureFlash: true,
       }),
@@ -43,15 +40,21 @@ class RouterUser {
       }
     );
 
-    router.post( 
-      '/signin',    function(req,res,next){
+    router.post(
+      '/signin',
       passport.authenticate('local-signin', {
-        failureFlash: true,
-         })(req,res,next); 
-})
-      
-         
-   
+        failureFlash: false,
+      }),
+      function (req, res) {
+        try {
+          const token = generateJwtToken(req.user.toJSON());
+          res.cookie('jwt', token);
+          res.json({ message: 'Success', token: token });
+        } catch (err) {
+          res.json({ message: 'Error', err: err });
+        }
+      }
+    );
 
     router.get(
       '/auth/facebook',
@@ -97,11 +100,9 @@ class RouterUser {
       this.controlador.renderProfile
     );
 
- 
     router.post('/forgot', this.controlador.forgot);
     router.get('/reset/:token', this.controlador.checkToken);
     router.post('/reset/:token', this.controlador.updatePassword);
-  
 
     router.get('/logout', this.controlador.renderLogOut);
     router.put(

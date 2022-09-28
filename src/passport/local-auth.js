@@ -82,7 +82,7 @@ passport.use(
       usernameField: 'email',
       passwordField: 'password',
       passReqToCallback: true,
-    }, 
+    },
     userController.login
   )
 );
@@ -100,7 +100,7 @@ passport.use(
       secretOrKey: config.JWT.SECRET,
     },
     (jwtPayload, done) => {
-        console.log('jwtPayload', jwtPayload);
+       
       if (!jwtPayload) {
         logger.error('error in jtw');
         return done('No token found...');
@@ -133,7 +133,11 @@ passport.deserializeUser(async (user, done) => {
     const userDetail = await userController.existPassport(
       user.email ? user.email : user._json.email
     );
-    done(null, userDetail);
+ 
+    done(null, {
+     userDetail
+     
+    });
   } catch (error) {
     logger.error('error in deserializeUser', error);
     done(error);

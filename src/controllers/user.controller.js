@@ -3,6 +3,9 @@ const bcrypt = require('bcrypt'),
   sendEmail = require('../notificaciones/emails/Registration/newUser'),
   UserFactory = require('../classes/User/UserFactory.class'),
   jwt = require('jsonwebtoken'),
+  passport = require('passport'),
+  passportLocal = require('passport-local'),
+  LocalStrategy = passportLocal.Strategy,
   config = require('../utils/config'),
   passwordChange = require('../notificaciones/emails/Login/passwordChange'),
   sendNewPasswordEmail = require('../notificaciones/emails/Login/forgotPassword');
@@ -84,7 +87,7 @@ class UserController {
   editProfile = async (req, res) => {
     const id = req.params.id;
     let datos = req.body;
-    console.log('datos', datos);
+
     try {
       if (datos.password) {
         let newPassword = bcrypt.hashSync(
@@ -92,7 +95,7 @@ class UserController {
           bcrypt.genSaltSync(5),
           null
         );
-        console.log('newPassword', newPassword);
+
         datos = { password: newPassword };
       }
       const newUser = await this.userDAO.actualizarPorEmail(id, datos);
@@ -131,7 +134,7 @@ class UserController {
           },
         ],
       });
-      console.log('user', user);
+
       await this.userDAO.actualizarPorEmail(user.email, user);
       sendNewPasswordEmail(token);
     }
@@ -142,7 +145,7 @@ class UserController {
       resetPasswordToken: req.params.token,
       resetPasswordExpires: { $gt: Date.now() },
     });
-    console.log(user);
+
     if (!user) {
       return res.status(422).send({
         errors: [
@@ -162,7 +165,7 @@ class UserController {
       resetPasswordToken: req.params.token,
       resetPasswordExpires: { $gt: Date.now() },
     });
-    console.log(user);
+
     if (!user) {
       `enter code here`;
       return res.status(422).send({
@@ -175,7 +178,6 @@ class UserController {
       });
     }
     if (req.body.password === req.body.confirm) {
-      console.log(req.body);
       let newPassword = bcrypt.hashSync(
         req.body.password,
         bcrypt.genSaltSync(5),
@@ -195,7 +197,6 @@ class UserController {
   };
 
   deleteUser = async (req, res) => {
-    console.log(req.params.id);
     try {
       await this.userDAO.eliminar('email', req.params.id);
       res.status(200).json('Elemento eliminado');
@@ -205,50 +206,29 @@ class UserController {
     }
   };
 
-  login = (req, res) => {
-    return async (email, password, done) => {
-      try {
-        const user = await this.userDAO.mostrarEmail(email);
+  login = async (req, email, password, done) => {
+    try {
+      const user = await this.userDAO.mostrarEmail(email);
 
-        if (!user) {
-          done(null, false, {
-            errors: [{ title: 'error', detail: 'Password do not match' }],
-          });
-        } else {
-          bcrypt.compare(password, user.password).then((isMatch) => {
-            if (isMatch) {
-              const payload = {
-                id: user.id,
-                name: user.name,
-                avatar: user.avatar,
-              };
-              jwt.sign(
-                payload,
-                'secret',
-                {
-                  expiresIn: 3600,
-                },
-                (err, token) => {
-                  if (err) console.error('There is some error in token', err);
-                  console.log('OKA');
-
-                  res
-                    .status(200)
-                    .json({ success: true, token: `Bearer ${token}` });
-                }
-              );
-            } else {
-              done(null, false, {
-                errors: [{ title: 'error', detail: 'Password do not match' }],
-              });
-            }
-          });
-        }
-      } catch (error) {
-        const mensaje = 'Error al iniciar sesion';
-        return this.message.errorAuth(error, mensaje);
+      if (!user) {
+        done(null, false, {
+          message: 'No existe el correo registrado',
+        });
+      } else {
+        bcrypt.compare(password, user.password, function (err, result) {
+          if (result == true) {
+            return done(null, user);
+          } else {
+            done(null, false, {
+              message: 'Contraseña incorrecta',
+            });
+          }
+        });
       }
-    };
+    } catch (error) {
+      const mensaje = 'Error al iniciar sesion';
+      this.message.errorInternalServer(error, mensaje);
+    }
   };
 }
 

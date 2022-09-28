@@ -70,7 +70,7 @@ class ServiceDAOMongoDB {
     try {
       await this.conn.connect();
       let doc = await this.coleccion.findOne({ email: email });
-      console.log(doc)
+    
       return doc;
     } catch (error) {
       this.message.errorInternalServer(error, `Error al mostrar email`);
@@ -140,7 +140,7 @@ class ServiceDAOMongoDB {
       await this.conn.connect();
 
       let doc = await this.coleccion.updateOne({ _id: id }, { $set: body });
-      console.log(id, body);
+ 
       return doc;
     } catch (error) {
       this.message.errorInternalServer(error, `Error al actualizar`);

@@ -52,9 +52,8 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-app.use(
-  express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 50000 })
-);
+app.use(bodyParser.urlencoded({ extended: true }));
+ 
 app.use(express.json({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 
 /****  Configurando el cors de forma dinamica */
@@ -93,20 +92,22 @@ app.use(
     saveUninitialized: false,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24, // one day
+       secure: false,
+    httpOnly: false
     },
   })
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(flash());
 app.use((req, res, next) => {
-  res.locals.user = req.user;
-  res.locals.session = req.session;
+  console.log(req.user);
+  // res.locals.user = req.user;
+  // res.locals.session = req.session;
   next();
 });
- 
+app.use(flash());
+
  
 app.use(morgan('dev'));
 io.use(function (socket, next) {
@@ -125,7 +126,7 @@ io.use(function (socket, next) {
     if (!sid) {
       return next(new Error('Cookie signature is not valid'));
     }
-    console.log('session ID ( %s )', sid);
+    //console.log('session ID ( %s )', sid);
     data.sid = sid;
     mongooseSessionStore.get(sid, function (err, session) {
       if (err) return next(err);
@@ -152,6 +153,7 @@ app.use('/chat', new RouterChat().start());
 app.use('/api/carrito', new RouterCart().start());
 app.use('/api/pedido', new RouterOrder().start());
 
+ 
 // If the Node process ends, close the Mongoose connection
 process.on('SIGINT', function () {
   mongoose.connection.close(function () {
