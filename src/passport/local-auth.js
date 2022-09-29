@@ -100,7 +100,6 @@ passport.use(
       secretOrKey: config.JWT.SECRET,
     },
     (jwtPayload, done) => {
-       
       if (!jwtPayload) {
         logger.error('error in jtw');
         return done('No token found...');
@@ -117,26 +116,21 @@ passport.serializeUser(function (user, done) {
       email: user.email ? user.email : user.emails[0].value,
       membership: user.membershipID ? user.membershipID : 2,
     });
-  
- 
-   
   } catch (error) {
     logger.error('error in deserializeUser', error);
     done(error);
   }
- 
 });
 
 passport.deserializeUser(async (user, done) => {
   try {
-    logger.info("****SESSIONES*******")
+    logger.info('****SESSIONES*******');
     const userDetail = await userController.existPassport(
       user.email ? user.email : user._json.email
     );
- 
+
     done(null, {
-     userDetail
-     
+      userDetail,
     });
   } catch (error) {
     logger.error('error in deserializeUser', error);

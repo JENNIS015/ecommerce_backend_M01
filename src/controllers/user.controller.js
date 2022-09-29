@@ -121,7 +121,7 @@ class UserController {
           email: user.email,
         },
         config.JWT.SECRET,
-        { expiresIn: '1h' }
+        { expiresIn: '7d' }
       );
 
       user.resetPasswordToken = token;
