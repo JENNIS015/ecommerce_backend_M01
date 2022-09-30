@@ -20,6 +20,7 @@ const express = require('express'),
 const app = express();
 const { Server: HttpServer } = require('http');
 const { Server: IOServer } = require('socket.io');
+const RouterCategory = require('./src/routes/category.router');
 const httpServer = new HttpServer(app);
 const io = new IOServer(httpServer);
 
@@ -91,7 +92,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // one day
+      maxAge: 1000 * 60 * 60 * 24 *7, // one day
        secure: false,
     httpOnly: false
     },
@@ -152,7 +153,7 @@ app.use('/template/email', new RouterEmail().start());
 app.use('/chat', new RouterChat().start());
 app.use('/api/carrito', new RouterCart().start());
 app.use('/api/pedido', new RouterOrder().start());
-
+app.use('/api/categorias', new RouterCategory().start());
  
 // If the Node process ends, close the Mongoose connection
 process.on('SIGINT', function () {

@@ -10,7 +10,7 @@ class RouterViews {
 
   start() {
     router.get('/', this.view.indexPage);
-    router.get('/categorias', this.view.obtenerCategorias);
+     router.get('/categorias', this.view.obtenerCategorias);
     router.get('/productos/nuevo', this.view.newProduct);
     router.get('/productos', this.view.getProductAll);
     router.get('/productos/:id', this.view.getProductId);
