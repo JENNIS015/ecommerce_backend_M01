@@ -13,25 +13,19 @@ const express = require('express'),
   exphbs = require('express-handlebars'),
   cors = require('cors'),
   mongoose = require('mongoose'),
-  cookie = require('cookie'),
   config = require('./src/utils/config');
-
 
 const app = express();
 const { Server: HttpServer } = require('http');
-const { Server: IOServer } = require('socket.io');
 const RouterCategory = require('./src/routes/category.router');
 const httpServer = new HttpServer(app);
-const io = new IOServer(httpServer);
 
 const RouterProduct = require('./src/routes/products.router'),
   RouterCart = require('./src/routes/cart.router'),
   RouterOrder = require('./src/routes/order.router'),
   RouterUser = require('./src/routes/user.router'),
   RouterEmail = require('./src/routes/email.router'),
-  RouterViews = require('./src/routes/views.router'),
-  RouterChat = require('./src/routes/chat.router'),
-  chatSocket = require('./src/controllers/chatSocket');
+  RouterViews = require('./src/routes/views.router');
 
 app.use(compression());
 app.use(morgan('tiny'));
@@ -53,7 +47,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
- 
+
 app.use(express.json({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 
 /****  Configurando el cors de forma dinamica */
@@ -92,69 +86,29 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24 *7, // one day
-       secure: false,
-    httpOnly: false
+      maxAge: 1000 * 60 * 60 * 24 * 7, // one day
+      secure: false,
+      httpOnly: false,
     },
   })
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
-// app.use((req, res, next) => {
- 
-//   // res.locals.user = req.user;
-//   // res.locals.session = req.session;
-//   next();
-// });
+
 app.use(flash());
-
- 
 app.use(morgan('dev'));
-io.use(function (socket, next) {
-  try {
-    var data = socket.handshake || socket.request;
-    if (!data.headers.cookie) {
-      return next(new Error('Missing cookie headers'));
-    }
-  
-    var cookies = cookie.parse(data.headers.cookie);
- 
-    if (!cookies[COOKIE_NAME]) {
-      return next(new Error('Missing cookie ' + COOKIE_NAME));
-    }
-    var sid = cookieParser.signedCookie(cookies[COOKIE_NAME], COOKIE_SECRET);
-    if (!sid) {
-      return next(new Error('Cookie signature is not valid'));
-    }
-    
-    data.sid = sid;
-    mongooseSessionStore.get(sid, function (err, session) {
-      if (err) return next(err);
-      if (!session) return next(new Error('session not found'));
-     
-      data.session = session;
-      data.id = sid;
-      next();
-    });
-  } catch (err) {
-    console.error(err.stack);
-    next(new Error('Internal server error'));
-  }
-});
 
-chatSocket(io);
 app.use('/', new RouterUser().start());
 app.use('/', new RouterViews().start());
 
-
 app.use('/api/productos', new RouterProduct().start());
 app.use('/template/email', new RouterEmail().start());
-app.use('/chat', new RouterChat().start());
+
 app.use('/api/carrito', new RouterCart().start());
 app.use('/api/pedido', new RouterOrder().start());
 app.use('/api/categorias', new RouterCategory().start());
- 
+
 // If the Node process ends, close the Mongoose connection
 process.on('SIGINT', function () {
   mongoose.connection.close(function () {

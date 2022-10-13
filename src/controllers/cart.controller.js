@@ -11,7 +11,7 @@ class CartController {
     this.message = new APICustom();
   }
 
-  ///view///
+
   getItemsInCart = async (id) => {
     try {
       let cart = await this.cartDAO.mostrarId(id);
@@ -77,10 +77,7 @@ class CartController {
       }
       res.status(200).json({ producto: list, cartID: idCart });
     } catch (error) {
-      res.render('carrito', {
-        producto: [],
-        error: true,
-      });
+     
       this.message.errorInternalServer(err, 'Error al obtener al carrito');
     }
   };

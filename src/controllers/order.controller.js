@@ -13,9 +13,7 @@ class OrderController {
     this.user = new UserController();
     this.message = new APICustom();
   }
-  renderThanks = (req, res) => {
-    res.render('gracias');
-  };
+ 
 
   getOrders = async (req, res) => {
     try {
@@ -25,17 +23,7 @@ class OrderController {
       this.message.errorInternalServer(error, 'Error al guardar las ordenes');
     }
   };
-
-  getOrderById = async (req, res) => {
-    const id = req.params.id;
-    try {
-      const cart = await this.cart.getCartOrder(id);
-
-      res.render('order', { title: 'Orden', producto: cart.items });
-    } catch (error) {
-      this.message.errorInternalServer(error, 'Error al guardar la orden');
-    }
-  };
+ 
   updateById = async (req, res) => {
     const id = req.params.id;
     const body = req.body;

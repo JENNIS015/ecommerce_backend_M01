@@ -1,37 +1,13 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@17.0.3/build/css/intlTelInput.css" />
-<script src="https://cdn.jsdelivr.net/npm/intl-tel-input@17.0.3/build/js/intlTelInput.js"></script>
-
-<div class="container">
-  <div class="row">
+<meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, shrink-to-fit=no"
+/>
  
-    {{#if user}}
-    <h1>Bienvenido</h1>
-    {{else}}
-    <div class="col m6">
-      {{> login}}
+<link rel="stylesheet" href="/css/style.css" />
+ 
+<div class="base io"> 
+  <h1 class="io">403</h1>
+  <h2>Access forbidden</h2>
 
-    </div>
-    <div class="col m6">
-      {{> signUp}}
-    </div>
-    {{/if}}
-  </div>
 </div>
-
-
-
-<script>
-  let input = document.querySelector("#phone");
-  window.intlTelInput(input, {
-    separateDialCode: true,
-    initialCountry: "AR",
-    dropdownContainer: document.body
-  });
-
-
-  let iti = window.intlTelInputGlobals.getInstance(input);
-
-  input.addEventListener('input', function () {
-    document.getElementById('country').value = iti.activeItem.dataset.dialCode;
-  });
-</script>

@@ -94,11 +94,7 @@ class RouterUser {
         res.redirect('/productos');
       }
     );
-
-    router.get('/', ensureAuthenticated, (req, res) => {
-      res.render('index', { user: req.user });
-    });
-
+ 
     router.get(
       '/profile/:id',
       ensureAuthenticated,
