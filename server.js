@@ -101,12 +101,12 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use((req, res, next) => {
-  console.log(req.user);
-  // res.locals.user = req.user;
-  // res.locals.session = req.session;
-  next();
-});
+// app.use((req, res, next) => {
+ 
+//   // res.locals.user = req.user;
+//   // res.locals.session = req.session;
+//   next();
+// });
 app.use(flash());
 
  
@@ -117,9 +117,9 @@ io.use(function (socket, next) {
     if (!data.headers.cookie) {
       return next(new Error('Missing cookie headers'));
     }
-    // console.log('cookie header ( %s )', JSON.stringify(data.headers.cookie));
+  
     var cookies = cookie.parse(data.headers.cookie);
-    //console.log('cookies parsed ( %s )', JSON.stringify(cookies));
+ 
     if (!cookies[COOKIE_NAME]) {
       return next(new Error('Missing cookie ' + COOKIE_NAME));
     }
@@ -127,12 +127,12 @@ io.use(function (socket, next) {
     if (!sid) {
       return next(new Error('Cookie signature is not valid'));
     }
-    //console.log('session ID ( %s )', sid);
+    
     data.sid = sid;
     mongooseSessionStore.get(sid, function (err, session) {
       if (err) return next(err);
       if (!session) return next(new Error('session not found'));
-      //  console.log("AIO", session)
+     
       data.session = session;
       data.id = sid;
       next();

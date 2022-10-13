@@ -17,7 +17,7 @@ class CategoryController {
   };
 
   newCategoria = async (req, res) => {
-    console.log('CATEGORIA', req.body);
+ 
     await this.CategoryDAO.guardar(req.body)
 
       .then(() => {

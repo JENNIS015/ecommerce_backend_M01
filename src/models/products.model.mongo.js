@@ -9,6 +9,7 @@ const ProductSchema = mongoose.Schema({
   color: { type: String, require: false },
   stock: { type: Number, require: false, default: 0 },
   oferta: { type: Number, require: false, default: 0 },
+  destacado: { type: Boolean, require: false, default: false },
   fecha: { type: String, require: false },
   alto: { type: Number, require: false, default: 0 },
   largo: { type: Number, require: false, default: 0 },

@@ -7,6 +7,7 @@ class ProductDTO {
     this.categoria = productos.categoria;
     this.precio = productos.precio;
     this.stock = productos.stock;
+        this.destacado = productos.destacado;
     this.color = productos.color;
     this.oferta = productos.oferta;
     this.fecha = productos.fecha;

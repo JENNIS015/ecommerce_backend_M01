@@ -19,10 +19,17 @@ class ProductsController {
   };
 
   categories = async () => {
-    const cat = await this.ProductsDAO.mostrarTodasCategorias();
-    return cat;
+    const item = await this.ProductsDAO.mostrarByItem('categoria');
+    return item;
   };
-
+  price = async () => {
+    const item = await this.ProductsDAO.mostrarByItem('precio');
+    return item;
+  };
+  color = async () => {
+    const item = await this.ProductsDAO.mostrarByItem('color');
+    return item;
+  };
   productId = async (id) => {
     const doc = await this.ProductsDAO.mostrarId(id);
     const productsDto = new ProductDTO(doc);
@@ -69,7 +76,14 @@ class ProductsController {
       this.message.errorNotFound(error, 'categoria id no encontrado');
     }
   };
+  getProductsFeatured = async (req, res) => {
+    await this.ProductsDAO.buscarCondicionBody({ destacado: true })
+      .then((result) => res.status(200).json(result))
 
+      .catch((error) => {
+        this.message.errorNotFound(error, 'categoria id no encontrado');
+      });
+  };
   saveProducts = async (req, res) => {
     await this.ProductsDAO.guardar({
       ...req.body,
@@ -77,7 +91,6 @@ class ProductsController {
     })
 
       .then(() => {
-        console.log(req.files);
         res.status(200).json({ status: true, result: 'Producto Guardado' });
       })
       .catch((error) => {
@@ -96,9 +109,7 @@ class ProductsController {
         for (let i = 0; i < product.foto.length; i++) {
           fs.unlink(
             './public/uploads/' + product.foto[i].filename,
-            function (err, result) {
-            
-            }
+            function (err, result) {}
           );
         }
       }
@@ -107,7 +118,7 @@ class ProductsController {
     }
 
     await this.ProductsDAO.eliminar('id', req.params.id).then(() => {
-      console.log(`Eliminado ${req.params.id}`);
+      this.message.infoSimple(`Eliminado ${req.params.id}`);
     });
   };
 
@@ -119,9 +130,13 @@ class ProductsController {
       const newDetail = await this.ProductsDAO.actualizar(id, {
         foto: body.dataObj,
       });
-      console.log(body.dataObj);
+
       fs.unlink('./public/uploads/' + body.filename, function (err, result) {
-        if (err) console.log('error', err);
+        if (err)
+          this.message.errorInternalServer(
+            err,
+            ' No se ha podido editar producto'
+          );
       });
     } catch (err) {
       this.message.errorNotFound(err, 'Error al eliminar foto producto');
@@ -130,15 +145,12 @@ class ProductsController {
 
   discountStock = async (req, res) => {
     const body = req.body;
-    console.log('BODY', body);
+
     try {
       let doc = await this.ProductsDAO.mostrarId(body.id);
       let newStock = doc.stock - body.cantidad;
-      console.log('doc.stock', doc.stock);
-      console.log('newStock', newStock);
+
       await this.ProductsDAO.actualizar(body.id, { stock: newStock });
-
-
     } catch (error) {
       this.message.errorInternalServer(
         error,
@@ -164,23 +176,18 @@ class ProductsController {
   editProduct = async (req, res) => {
     const id = req.params.id;
     const body = req.body;
-    console.log(req.files);
 
     try {
-      if (req.files) {
+      if (req.files.length) {
         let doc = await this.ProductsDAO.mostrarId(id);
-        // console.log('doc', doc);
         const fotoNueva = req.files;
-        console.log('NUEVO', fotoNueva);
-
         let fotos = doc.foto.concat(fotoNueva);
-
         await this.ProductsDAO.actualizar(id, { foto: fotos });
         res.status(200).send(`Producto actualizado  ${id}`);
       } else {
-        console.log('BP', body);
-        await this.ProductsDAO.actualizar(id, body);
-        res.status(200).send(`Producto actualizado  ${id} - ${body}`);
+        await this.ProductsDAO.actualizar(id, body).then((result) =>
+          res.status(200).send(`Producto actualizado  ${id}`)
+        );
       }
     } catch (error) {
       this.message.errorInternalServer(

@@ -82,12 +82,12 @@ class ServiceDAOMongoDB {
   buscarCondicionBody = async (body) => {
     try {
       await this.conn.connect();
-      let doc = await this.coleccion.findOne(body);
+      let doc = await this.coleccion.find(body);
       return doc;
     } catch (error) {
       this.message.errorInternalServer(error, `Error al mostrar email`);
     } finally {
-      this.message.infoSimple('****Mostrar por Email****');
+      this.message.infoSimple('****Mostrar por buscarCondicionBody****');
     }
   };
   mostrarByEmail = async (id) => {
@@ -119,10 +119,10 @@ class ServiceDAOMongoDB {
     }
   };
 
-  mostrarTodasCategorias = async () => {
+  mostrarByItem = async (item) => {
     try {
       await this.conn.connect();
-      let cat = await this.coleccion.distinct('categoria');
+      let cat = await this.coleccion.distinct(item);
 
       return cat;
     } catch (error) {
