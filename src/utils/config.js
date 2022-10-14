@@ -22,7 +22,7 @@ module.exports = {
   },
   JWT: { SECRET: process.env.PRIVATE_KEY_JWT },
   FRONT: process.env.FRONT,
-  BACKEND_URL: process.env.BACKEND_URL + parseInt(process.env.PORT) || 8080,
+  ADMINPAGE: process.env.ADMINPAGE,
   EMAIL: {
     TEST_EMAIL: process.env.TEST_EMAIL,
     PASS_EMAIL: process.env.PASS_EMAIL,

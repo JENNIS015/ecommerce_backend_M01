@@ -1,5 +1,5 @@
 const send = require('../../config/configEmail');
-const BACKEND_URL = require('../../../utils/config');
+ 
 //email to admin
 function passwordChange(email) {
   const templateFile = 'templateLogin',

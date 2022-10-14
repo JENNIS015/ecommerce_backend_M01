@@ -54,7 +54,7 @@ app.use(express.json({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 if (config.SERVER.entorno == 'development') {
   app.use(
     cors({
-      origin: [config.FRONT, 'http://localhost:3001'],
+      origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3001'],
       credentials: true,
     })
   );
