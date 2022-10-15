@@ -4,11 +4,8 @@ const UserController = require('../controllers/user.controller'),
   userController = new UserController(),
   passport = require('passport'),
   passportLocal = require('passport-local'),
-  { Strategy } = require('passport-facebook'),
-  GoogleStrategy = require('passport-google-oauth2').Strategy,
   LocalStrategy = passportLocal.Strategy,
   JWTStrategy = require('passport-jwt'),
-  FacebookStrategy = Strategy,
   config = require('../utils/config.js'),
   logger = require('../utils/loggers');
 
@@ -31,39 +28,8 @@ authUser = async (request, accessToken, refreshToken, profile, cb) => {
   }
 };
 
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: config.GOOGLE.GOOGLE_ID,
-      clientSecret: config.GOOGLE.GOOGLE_SECRET,
-      callbackURL: '/auth/google/callback',
-      passReqToCallback: true,
-    },
-    authUser
-  )
-);
-
-passport.use(
-  new FacebookStrategy(
-    {
-      clientID: config.FACEBOOK.FACE_APP_ID,
-      clientSecret: config.FACEBOOK.FACE_APP_SECRET,
-      callbackURL: '/auth/facebook/callback',
-      profileFields: [
-        'id',
-        'emails',
-        'link',
-        'name',
-        'updated_time',
-        'verified',
-        'displayName',
-        'photos',
-      ],
-    },
-    authUser
-  )
-);
-
+ 
+ 
 passport.use(
   'local-signup',
   new LocalStrategy(
