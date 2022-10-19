@@ -4,6 +4,7 @@ const express = require('express'),
   passport = require('passport'),
   cookieParser = require('cookie-parser'),
   session = require('express-session'),
+   cookieSession = require('cookie-session'),
   MongoStore = require('connect-mongo'),
   cluster = require('cluster'),
   logger = require('./src/utils/loggers'),
@@ -30,6 +31,10 @@ const RouterProduct = require('./src/routes/products.router'),
 app.use(compression());
 app.use(morgan('tiny'));
 app.use('/uploads', express.static('uploads'));
+app.use(
+  cookieSession({ maxAge: 30 * 24 * 60 * 60 * 1000, keys: [keys.cookieKey] })
+);
+
 app.engine(
   '.hbs',
   exphbs.engine({
@@ -75,20 +80,19 @@ const mongooseSessionStore = MongoStore.create({
 });
 
 const COOKIE_NAME = 'sid';
-const COOKIE_SECRET = config.MONGO_DB.MONGO_CONNECT.secret;
-
-app.use(cookieParser(COOKIE_SECRET));
+const SESSION_SECRET = config.MONGO_DB.MONGO_CONNECT.secret;
+ 
+app.use(cookieParser(SESSION_SECRET));
 app.use(
   session({
     name: COOKIE_NAME,
     store: mongooseSessionStore,
-    secret: COOKIE_SECRET,
+    secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7, // one day
       httpOnly: false,
-      cookie: { secure: process.env.ENV === 'PRODUCTION' },
     },
   })
 );
