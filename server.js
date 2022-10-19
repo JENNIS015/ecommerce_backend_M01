@@ -35,6 +35,14 @@ app.use(
   cookieSession({ maxAge: 30 * 24 * 60 * 60 * 1000, keys: [keys.cookieKey] })
 );
 
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept'
+  );
+  next();
+});
 app.engine(
   '.hbs',
   exphbs.engine({
@@ -79,13 +87,13 @@ const mongooseSessionStore = MongoStore.create({
   ttl: 3600,
 });
 
-const COOKIE_NAME = 'sid';
+ 
 const SESSION_SECRET = config.MONGO_DB.MONGO_CONNECT.secret;
  
-app.use(cookieParser(SESSION_SECRET));
+
 app.use(
   session({
-    name: COOKIE_NAME,
+    name: 'sid',
     store: mongooseSessionStore,
     secret: SESSION_SECRET,
     resave: false,
