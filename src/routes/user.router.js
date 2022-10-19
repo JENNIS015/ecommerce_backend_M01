@@ -36,12 +36,11 @@ class RouterUser {
       (req, res) => {
         const token = generateJwtToken(req.user);
         res.cookie('jwt', token, { httpOnly: true });
- 
+
         return token;
       }
     );
 
-    
     router.post(
       '/signin',
       passport.authenticate('local-signin', {
@@ -51,7 +50,7 @@ class RouterUser {
         try {
           const token = generateJwtToken(req.user.toJSON());
           res.cookie('jwt', token, { httpOnly: true });
- 
+
           res.json({ message: 'Success', token: token });
         } catch (err) {
           res.json({ message: 'Error', err: err });
@@ -71,8 +70,8 @@ class RouterUser {
       }),
       function (req, res) {
         const token = generateJwtToken(req.user);
-         res.cookie('jwt', token, { httpOnly: true });
- 
+        res.cookie('jwt', token, { httpOnly: true });
+
         res.redirect('/productos');
       }
     );
@@ -89,12 +88,12 @@ class RouterUser {
       }),
       function (req, res) {
         const token = generateJwtToken(req.user);
-      res.cookie('jwt', token, { httpOnly: true });
- 
+        res.cookie('jwt', token, { httpOnly: true });
+
         res.redirect('/productos');
       }
     );
- 
+
     router.get(
       '/profile/:id',
       ensureAuthenticated,

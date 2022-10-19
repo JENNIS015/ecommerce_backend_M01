@@ -61,7 +61,7 @@ if (config.SERVER.entorno == 'development') {
 } else {
   app.use(
     cors({
-      origin: [config.FRONT, config.ADMINPAGE],
+      origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3000'],
       optionsSucessStatus: 200,
       credentials: true,
       methods: 'GET, PUT, POST, DELETE',
