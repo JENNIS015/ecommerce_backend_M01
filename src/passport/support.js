@@ -1,4 +1,6 @@
 function isAdmin(req, res, next) {
+  logger.info('Identificado', req.isAuthenticated());
+  logger.info('Membresia', req.user.userDetail.membershipID);
   if (req.isAuthenticated() && req.user.userDetail.membershipID === 1) {
     return next();
   } else {

@@ -1,4 +1,3 @@
-const { rmSync } = require('fs');
 const CartDTO = require('../classes/Cart/CartDTO.class'),
   CartDAOFactory = require('../classes/Cart/CartDAOFactory.class'),
   ProductDAOFactory = require('../classes/Products/ProductDAOFactory.class'),

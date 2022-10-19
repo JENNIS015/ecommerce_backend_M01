@@ -1,9 +1,8 @@
 const ProductsController = require('./products.controller');
 const CartController = require('./cart.controller');
-const config = require('../utils/config');
 const APICustom = require('../classes/Error/customError');
 const UserController = require('./user.controller');
-const x = require('uniqid');
+
 
 class RequestViews {
   constructor() {

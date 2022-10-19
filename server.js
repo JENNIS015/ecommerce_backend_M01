@@ -54,14 +54,14 @@ app.use(express.json({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 if (config.SERVER.entorno == 'development') {
   app.use(
     cors({
-      origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3001'],
+      origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3000'],
       credentials: true,
     })
   );
 } else {
   app.use(
     cors({
-      origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3001'],
+      origin: [config.FRONT, config.ADMINPAGE],
       optionsSucessStatus: 200,
       credentials: true,
       methods: 'GET, PUT, POST, DELETE',
@@ -108,6 +108,7 @@ app.use('/template/email', new RouterEmail().start());
 app.use('/api/carrito', new RouterCart().start());
 app.use('/api/pedido', new RouterOrder().start());
 app.use('/api/categorias', new RouterCategory().start());
+
 
 // If the Node process ends, close the Mongoose connection
 process.on('SIGINT', function () {

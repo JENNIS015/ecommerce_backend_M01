@@ -1,10 +1,7 @@
-const APICustom = require('../classes/Error/customError');
-const ProductDAOFactory = require('../classes/Products/ProductDAOFactory.class');
-const msgSend = require('../notificaciones/config/msjConfig'),
-  newOrderEmail = require('../notificaciones/emails/Order/newOrder'),
+const APICustom = require('../classes/Error/customError'),
   UserController = require('../controllers/user.controller'),
-  OrderFactory = require('../classes/Order/OrderFactory.class.js');
-const ProductsController = require('./products.controller');
+  OrderFactory = require('../classes/Order/OrderFactory.class.js'),
+  ProductsController = require('./products.controller');
 
 class OrderController {
   constructor() {
@@ -13,7 +10,6 @@ class OrderController {
     this.user = new UserController();
     this.message = new APICustom();
   }
- 
 
   getOrders = async (req, res) => {
     try {
@@ -23,7 +19,7 @@ class OrderController {
       this.message.errorInternalServer(error, 'Error al guardar las ordenes');
     }
   };
- 
+
   updateById = async (req, res) => {
     const id = req.params.id;
     const body = req.body;
@@ -47,7 +43,6 @@ class OrderController {
     }
   };
   postOrder = async (req, res, done) => {
- 
     try {
       const body = req.body;
 
@@ -75,9 +70,6 @@ class OrderController {
           return await this.controladorProductos.discountStock({ body: data });
         })
       );
-
-      // newOrderEmail(orden);
-      //    msgSend(orden.phone, orden);
 
       res.status(200).json({ data: orden });
     } catch (err) {
