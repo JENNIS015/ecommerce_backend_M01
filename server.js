@@ -85,16 +85,20 @@ app.use(
     saveUninitialized: true,
     proxy: true,
     store: mongooseSessionStore,
+    sameSite: 'none',
     cookie: {
       secure: true,
-      maxAge: 3600000
+      maxAge: 3600000,
     },
   })
 );
 
 app.use(passport.initialize());
 app.use(passport.session());
-
+app.use(function (req, res, next) {
+  res.locals.user = req.user || null;
+  next();
+});
 app.use(flash());
 app.use(morgan('dev'));
 
