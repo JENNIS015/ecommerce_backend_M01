@@ -52,6 +52,7 @@ class RouterUser {
       '/signin',
       passport.authenticate('local-signin', {
         failureFlash: false,
+        session: true
       }),
       function (req, res) {
         try {
