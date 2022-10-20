@@ -49,8 +49,11 @@ class RouterUser {
           //   data: { token },
           // });
 
-          res.cookie('jwt', token, { httpOnly: false });
-
+          res.cookie('jwt', token, {
+            httpOnly: true,
+            secure: true,
+            maxAge: 3600000,
+          });
           res.json({ message: 'Success', token: token });
         } catch (err) {
           res.json({ message: 'Error', err: err });
@@ -79,7 +82,11 @@ class RouterUser {
           //   data: { token },
           // });
 
-          res.cookie('jwt', token, { httpOnly: false });
+          res.cookie('jwt', token, {
+            httpOnly: true,
+            secure: true,
+            maxAge: 3600000,
+          });
 
           res.json({ message: 'Success', token: token });
         } catch (err) {
