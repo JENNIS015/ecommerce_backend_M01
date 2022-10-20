@@ -1,5 +1,6 @@
 const logger = require('../../src/utils/loggers');
-const config = require('../utils/config');
+const config = require('../utils/config'),
+  jwt = require('jsonwebtoken')
 
 function isAdmin(req, res, next) {
   logger.info('token', req.cookies);
