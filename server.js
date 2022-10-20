@@ -52,6 +52,7 @@ app.use(express.json({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 
 const corsOptions = {
   origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3000'],
+  credentials: true,
 };
 
 app.use(cors(corsOptions));
