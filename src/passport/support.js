@@ -2,10 +2,10 @@ const logger = require('../../src/utils/loggers');
 const config = require('../utils/config');
 
 function isAdmin(req, res, next) {
-  logger.info('token', req);
+ 
   logger.info('token', req.cookies);
-  const token = req.cookies.jwt;
-
+ logger.info('token', req.signedCookies);
+const token = req.cookies;
   if (!token) return res.status(401).json({ error: 'Acceso denegado' });
 
   try {

@@ -2,7 +2,6 @@ const express = require('express'),
   flash = require('connect-flash'),
   bodyParser = require('body-parser'),
   passport = require('passport'),
-  cookieParser = require('cookie-parser'),
   session = require('express-session'),
   MongoStore = require('connect-mongo'),
   cluster = require('cluster'),
@@ -49,12 +48,13 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json({ limit: '50mb', extended: true, parameterLimit: 50000 }));
-if (app.get('env') === 'production') {
+// if (app.get('env') === 'production') {
   app.set('trust proxy', 1);  
-}
+// }
 const corsOptions = {
   origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3000'],
   credentials: true,
+    optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -66,8 +66,7 @@ const mongooseSessionStore = MongoStore.create({
 
 const COOKIE_SECRET = config.MONGO_DB.MONGO_CONNECT.secret;
 
-app.use(cookieParser(COOKIE_SECRET));
-
+ 
 app.use(
   session({
     secret: COOKIE_SECRET,
