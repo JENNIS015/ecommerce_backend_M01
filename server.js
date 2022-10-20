@@ -41,7 +41,7 @@ app.engine(
 );
 app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, 'public/views'));
- app.use(express.cookieParser());
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -63,8 +63,7 @@ if (config.SERVER.entorno == 'development') {
     cors({
       origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3000'],
       optionsSucessStatus: 200,
-      credentials: true,
-      methods: 'GET, PUT, POST, DELETE',
+      credentials: true
     })
   );
 }
@@ -76,7 +75,7 @@ const mongooseSessionStore = MongoStore.create({
 
 const COOKIE_NAME = 'sid';
 const COOKIE_SECRET = config.MONGO_DB.MONGO_CONNECT.secret;
-
+ 
 app.use(cookieParser(COOKIE_SECRET));
 app.use(
   session({

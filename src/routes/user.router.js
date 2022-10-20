@@ -34,10 +34,17 @@ class RouterUser {
         failureFlash: true,
       }),
       (req, res) => {
-        const token = generateJwtToken(req.user);
-        res.cookie('jwt', token, { httpOnly: false });
+         try {
+           const token = generateJwtToken(req.user);
+           res.cookie('jwt', token, { httpOnly: false });
 
-        return token;
+           res.json({ message: 'Success', token: token });
+         } catch (err) {
+           res.json({ message: 'Error', err: err });
+         }
+       
+
+     
       }
     );
 
