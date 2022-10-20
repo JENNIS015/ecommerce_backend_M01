@@ -63,7 +63,7 @@ if (config.SERVER.entorno == 'development') {
     cors({
       origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3000'],
       optionsSucessStatus: 200,
-      credentials: true
+      credentials: true,
     })
   );
 }
@@ -75,19 +75,19 @@ const mongooseSessionStore = MongoStore.create({
 
 const COOKIE_NAME = 'sid';
 const COOKIE_SECRET = config.MONGO_DB.MONGO_CONNECT.secret;
- 
+
 app.use(cookieParser(COOKIE_SECRET));
+app.enable('trust proxy');
 app.use(
   session({
-    name: COOKIE_NAME,
-    store: mongooseSessionStore,
     secret: COOKIE_SECRET,
-    resave: false,
-    saveUninitialized: false,
+    resave: true,
+    saveUninitialized: true,
+    proxy: true,  
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24 * 7, // one day
-      secure: false,
-      httpOnly: false,
+      secure: true,
+      maxAge: 3600000,
+      store: mongooseSessionStore,
     },
   })
 );
@@ -107,7 +107,6 @@ app.use('/template/email', new RouterEmail().start());
 app.use('/api/carrito', new RouterCart().start());
 app.use('/api/pedido', new RouterOrder().start());
 app.use('/api/categorias', new RouterCategory().start());
-
 
 // If the Node process ends, close the Mongoose connection
 process.on('SIGINT', function () {
