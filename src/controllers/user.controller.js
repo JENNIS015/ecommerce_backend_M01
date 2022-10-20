@@ -38,7 +38,7 @@ class UserController {
   register = async (req, email, password, done) => {
     try {
       const user = await this.userDAO.mostrarEmail(email);
-      const avatar = req.file.filename ? req.file.filename : null;
+      const avatar = req.file ? req.file.filename : null;
       if (user) {
         done(null, false, {
           message: 'The Email is already Taken',
