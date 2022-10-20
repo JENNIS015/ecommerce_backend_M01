@@ -34,29 +34,21 @@ class RouterUser {
         failureFlash: true,
       }),
       (req, res) => {
-         try {
-           const token = generateJwtToken(req.user);
-           res.cookie('jwt', token, { httpOnly: false });
-
-           res.json({ message: 'Success', token: token });
-         } catch (err) {
-           res.json({ message: 'Error', err: err });
-         }
-       
-
-     
-      }
-    );
-
-    router.post(
-      '/signin',
-      passport.authenticate('local-signin', {
-        failureFlash: false,
-        session: true
-      }),
-      function (req, res) {
         try {
-          const token = generateJwtToken(req.user.toJSON());
+          // create token
+          const token = jwt.sign(
+            {
+              name: req.user.email,
+              membershipID: req.user.membershipID,
+            },
+            config.JWT.SECRET
+          );
+
+          res.header('auth-token', token).json({
+            error: null,
+            data: { token },
+          });
+
           res.cookie('jwt', token, { httpOnly: false });
 
           res.json({ message: 'Success', token: token });
@@ -66,39 +58,33 @@ class RouterUser {
       }
     );
 
-    router.get(
-      '/auth/facebook',
-      passport.authenticate('facebook', { scope: ['public_profile', 'email'] })
-    );
-
-    router.get(
-      '/auth/facebook/callback',
-      passport.authenticate('facebook', {
-        failureMessage: true,
+    router.post(
+      '/signin',
+      passport.authenticate('local-signin', {
+        failureFlash: false,
+        session: true,
       }),
       function (req, res) {
-        const token = generateJwtToken(req.user);
-        res.cookie('jwt', token, { httpOnly: true });
+        try {
+          const token = jwt.sign(
+            {
+              name: req.user.email,
+              membershipID: req.user.membershipID,
+            },
+            config.JWT.SECRET
+          );
 
-        res.redirect('/productos');
-      }
-    );
+          res.header('auth-token', token).json({
+            error: null,
+            data: { token },
+          });
 
-    router.get(
-      '/auth/google',
-      passport.authenticate('google', { scope: ['email', 'profile'] })
-    );
+          res.cookie('jwt', token, { httpOnly: false });
 
-    router.get(
-      '/auth/google/callback',
-      passport.authenticate('google', {
-        failureMessage: true,
-      }),
-      function (req, res) {
-        const token = generateJwtToken(req.user);
-        res.cookie('jwt', token, { httpOnly: true });
-
-        res.redirect('/productos');
+          res.json({ message: 'Success', token: token });
+        } catch (err) {
+          res.json({ message: 'Error', err: err });
+        }
       }
     );
 

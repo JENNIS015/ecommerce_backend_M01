@@ -40,15 +40,7 @@ module.exports = {
   SRV: {
     persistencia: process.env.PERSISTENCIA || 'mongodb',
   },
-  FACEBOOK: {
-    FACE_APP_ID: process.env.FACEBOOK_APP_ID,
-    FACE_APP_SECRET: process.env.FACEBOOK_APP_SECRET,
-  },
-
-  GOOGLE: {
-    GOOGLE_ID: process.env.GOOGLE_ID,
-    GOOGLE_SECRET: process.env.SECRET_ID,
-  },
+ 
   SERVER: {
     numeroCPUs: process.env.NRO_CPU_MAX || os.cpus().length,
     PORT: parseInt(process.env.PORT) || 8080,

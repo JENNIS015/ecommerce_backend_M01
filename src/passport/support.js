@@ -1,17 +1,23 @@
-const logger = require('../../src/utils/loggers')
+const logger = require('../../src/utils/loggers');
+const config = require('../utils/config');
 
-  function isAdmin(req, res, next) {
-    logger.info('Identificado', req.isAuthenticated());
-    logger.info('Membresia', req._passport);
-        logger.info('Membresia', req);
-    if (req.isAuthenticated() && req.user.membershipID === 1) {
-      return next();
+function isAdmin(req, res, next) {
+  const token = req.header('auth-token');
+  if (!token) return res.status(401).json({ error: 'Acceso denegado' });
+  logger.info('token', token);
+
+  try {
+    const verified = jwt.verify(token, config.JWT.SECRET);
+    req.user = verified;
+    logger.info('   req.user ', req.user);
+    if (req.user.membershipID === 1) {
+      next();
     } else {
-      res.status(403).json({
-        error:
-          'se requiere autenticacion  de admin para acceder a este recurso',
-      });
+      res.status(400).json({ error: 'token no es admin' });
     }
-  };
+  } catch (error) {
+    res.status(400).json({ error: 'token no es válido' });
+  }
+}
 
 module.exports = { isAdmin };
