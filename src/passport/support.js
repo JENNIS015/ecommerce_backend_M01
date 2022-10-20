@@ -16,7 +16,7 @@ function isAdmin(req, res, next) {
   }
 
   // get cookieToken
-  let cookieToken = req.cookies.access_token ? req.cookies.access_token : null;
+  let cookieToken = req.cookies ? req.cookies.access_token : null;
 
   // set token from bearer header token or cookieToken
   let token = bearerToken || cookieToken;
