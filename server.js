@@ -83,11 +83,11 @@ app.use(
     secret: COOKIE_SECRET,
     resave: true,
     saveUninitialized: true,
-    proxy: true,  
+    proxy: true,
+    store: mongooseSessionStore,
     cookie: {
       secure: true,
-      maxAge: 3600000,
-      store: mongooseSessionStore,
+      maxAge: 3600000
     },
   })
 );
