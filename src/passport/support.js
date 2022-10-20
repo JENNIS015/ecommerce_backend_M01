@@ -2,8 +2,8 @@ const logger = require('../../src/utils/loggers')
 
   function isAdmin(req, res, next) {
     logger.info('Identificado', req.isAuthenticated());
-    logger.info('Membresia', req);
-    if (req.isAuthenticated() && req.user.userDetail.membershipID === 1) {
+    logger.info('Membresia', req._passport.session.user);
+    if (req.isAuthenticated() && req._passport.session.user.membershipID === 1) {
       return next();
     } else {
       res.status(403).json({
