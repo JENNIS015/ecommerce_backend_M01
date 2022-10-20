@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const ProductsController = require('../controllers/products.controller');
 const { isAdmin } = require('../passport/support');
-const { upload, fileSizeLimitErrorHandler } = require('../utils/functions');
+const { upload } = require('../utils/functions');
 class RouterProduct {
   constructor() {
     this.controlador = new ProductsController();
@@ -15,7 +15,7 @@ class RouterProduct {
       '/',
       isAdmin,
       upload.any(),
-      fileSizeLimitErrorHandler,
+
       this.controlador.saveProducts
     );
     router.delete('/:id', isAdmin, this.controlador.deleteProduct);
@@ -28,7 +28,6 @@ class RouterProduct {
       '/:id',
       upload.any(),
       isAdmin,
-      fileSizeLimitErrorHandler,
       this.controlador.editProduct
     );
 

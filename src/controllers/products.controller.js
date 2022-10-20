@@ -1,8 +1,9 @@
 const ProductDTO = require('../classes/Products/ProductsDTO.class'),
   ProductDAOFactory = require('../classes/Products/ProductDAOFactory.class'),
-  APICustom = require('../classes/Error/customError'),
-  fs = require('fs');
+  APICustom = require('../classes/Error/customError');
+
 const { upload } = require('../utils/functions');
+
 class ProductsController {
   constructor() {
     this.ProductsDAO = ProductDAOFactory.get();
@@ -85,20 +86,36 @@ class ProductsController {
       });
   };
   saveProducts = async (req, res) => {
-    await this.ProductsDAO.guardar({
-      ...req.body,
-      foto: req.files,
-    })
+    let imageURIs;
+    try {
+      if (req.files) {
+        // if you are adding multiple files at a go
+        imageURIs = []; // array to hold the image urls
+        const files = req.files; // array of images
+        for (const file of files) {
+          const { path } = file;
+          imageURIs.push(path);
+        }
+      } else {
+        if (req.file && req.file.path) {
+          // if only one image uploaded
+          imageURIs = req.file.path; // add the single
+        } else {
+          imageURIs = '';
+        }
+      }
 
-      .then(() => {
-        res.status(200).json({ status: true, result: 'Producto Guardado' });
-      })
-      .catch((error) => {
-        this.message.errorInternalServer(
-          error,
-          'No se ha podido guardar el producto'
-        );
+      const nuevoProducto = await this.ProductsDAO.guardar({
+        ...req.body,
+        foto: imageURIs,
       });
+      res.json({ msg: 'Product uploaded', success: true, nuevoProducto });
+    } catch (error) {
+      this.message.errorInternalServer(
+        error,
+        'No se ha podido guardar el producto'
+      );
+    }
   };
 
   deleteProduct = async (req, res) => {

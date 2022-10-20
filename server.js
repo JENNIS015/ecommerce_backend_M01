@@ -28,7 +28,7 @@ const RouterProduct = require('./src/routes/products.router'),
 
 app.use(compression());
 app.use(morgan('tiny'));
-app.use('/uploads', express.static('uploads'));
+ 
 app.engine(
   '.hbs',
   exphbs.engine({

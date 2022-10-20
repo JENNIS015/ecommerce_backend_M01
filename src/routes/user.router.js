@@ -21,12 +21,7 @@ class RouterUser {
       }
     };
 
-    const generateJwtToken = (user) => {
-      const token = jwt.sign(user, config.JWT.SECRET, {
-        expiresIn: '7d',
-      });
-      return token;
-    };
+  
 
     router.post(
       '/signup',

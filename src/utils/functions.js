@@ -1,35 +1,29 @@
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const config = require('./config');
 const multer = require('multer');
-const uniqid = require( 'uniqid');
-// SET STORAGE
-var storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './public/uploads');
-  },
 
-  
-  filename: function (req, file, cb) {
-    let originalname = file.originalname;
-    let extension = originalname.split('.');
-    let nombre = !req.body.nombre
-      ? (req.body.nombre = 'image')
-      : req.body.nombre;
-  
-      filename =
-        nombre + '.' +uniqid() + '.' + extension[extension.length - 1];
-
-    cb(null, filename);
-  },
- 
+cloudinary.config({
+  cloud_name: config.CLOUDINARY.CLOUDINARY_CLOUD,
+  api_key: config.CLOUDINARY.CLOUDINARY_KEY,
+  api_secret: config.CLOUDINARY.CLOUDINARY_SECRET,
 });
- 
-var upload = multer({ storage: storage , limits: { fileSize: 5000000 } })
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: 'Ecommerce',
+    format: async (req, file) => {
+      'jpg', 'png';
+    }, // supports promises as well
+    public_id: (req, file) => {
+      console.log(
+        new Date().toISOString().replace(/:/g, '-') + file.originalname
+      );
+      return new Date().toISOString().replace(/:/g, '-') + file.originalname;
+    },
+  },
+});
 
-const fileSizeLimitErrorHandler = (err, req, res, next) => {
-  if (err) {
-    res.send(413);
-  } else {
-    next();
-  }
-};
+const upload = multer({ storage: storage });
 
-module.exports = { upload, fileSizeLimitErrorHandler };
+module.exports = { upload };

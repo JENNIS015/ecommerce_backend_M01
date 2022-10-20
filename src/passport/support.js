@@ -3,8 +3,6 @@ const config = require('../utils/config'),
   jwt = require('jsonwebtoken')
 
 function isAdmin(req, res, next) {
-  logger.info('token', req.cookies);
-  logger.info('auth', req.auth);
 
   let bearerToken = null;
   // check if bearer header exists via API request
@@ -28,7 +26,7 @@ function isAdmin(req, res, next) {
     }
     req.token = token;
     req.auth = data;
-    console.log(data)
+  
     if (data.membershipID === 1) {
       next();
     } else {

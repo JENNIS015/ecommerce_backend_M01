@@ -29,6 +29,13 @@ module.exports = {
     ADMIN_EMAIL: process.env.ADMIN_EMAIL,
     CHAT_ADMIN_EMAIL: process.env.CHAT_ADMIN_EMAIL || 'admin@test.com',
   },
+  CLOUDINARY: {
+ 
+    CLOUDINARY_URL: process.env.CLOUDINARY_URL,
+    CLOUDINARY_SECRET: process.env.CLOUDINARY_SECRET,
+    CLOUDINARY_KEY: process.env.CLOUDINARY_KEY,
+    CLOUDINARY_CLOUD: process.env.CLOUDINARY_CLOUD  
+  },
   TWILO: {
     AUTH_TOKEN: process.env.AUTH_TOKEN,
     ACCOUNT_SID: process.env.ACCOUNT_SID,
@@ -40,7 +47,7 @@ module.exports = {
   SRV: {
     persistencia: process.env.PERSISTENCIA || 'mongodb',
   },
- 
+
   SERVER: {
     numeroCPUs: process.env.NRO_CPU_MAX || os.cpus().length,
     PORT: parseInt(process.env.PORT) || 8080,
