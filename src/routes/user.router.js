@@ -35,7 +35,7 @@ class RouterUser {
       }),
       (req, res) => {
         const token = generateJwtToken(req.user);
-        res.cookie('jwt', token, { httpOnly: true });
+        res.cookie('jwt', token, { httpOnly: false });
 
         return token;
       }
@@ -49,7 +49,7 @@ class RouterUser {
       function (req, res) {
         try {
           const token = generateJwtToken(req.user.toJSON());
-          res.cookie('jwt', token, { httpOnly: true });
+          res.cookie('jwt', token, { httpOnly: false });
 
           res.json({ message: 'Success', token: token });
         } catch (err) {

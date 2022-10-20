@@ -38,7 +38,7 @@ class UserController {
   register = async (req, email, password, done) => {
     try {
       const user = await this.userDAO.mostrarEmail(email);
-
+      const avatar = req.file.filename ? req.file.filename : null;
       if (user) {
         done(null, false, {
           message: 'The Email is already Taken',
@@ -60,7 +60,7 @@ class UserController {
           lastName: req.body.lastName,
           address: req.body.address,
           age: req.body.age,
-          avatar: req.file.filename,
+          avatar: avatar,
           membershipID: 2, //no admin por defecto
         };
 
