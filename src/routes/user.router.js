@@ -44,15 +44,10 @@ class RouterUser {
             config.JWT.SECRET
           );
 
-          // res.header('auth-token', token).json({
-          //   error: null,
-          //   data: { token },
-          // });
-
-          res.cookie('jwt', token, {
-            httpOnly: true,
-            secure: true,
-            maxAge: 3600000,
+          // Set jwt token in cookie as 'access_token'
+          res.cookie('access_token', token, {
+            maxAge: 3600, // expires after 1 hr
+            httpOnly: true, // cannot be modified using XSS or JS
           });
           res.json({ message: 'Success', token: token });
         } catch (err) {
@@ -69,7 +64,7 @@ class RouterUser {
       }),
       function (req, res) {
         try {
-          console.log(req.user)
+
           const token = jwt.sign(
             {
               name: req.user.email,
@@ -78,15 +73,10 @@ class RouterUser {
             config.JWT.SECRET
           );
 
-          // res.header('auth-token', token).json({
-          //   error: null,
-          //   data: { token },
-          // });
-
-          res.cookie('jwt', token, {
-            httpOnly: true,
-            secure: true,
-            maxAge: 3600000,
+          // Set jwt token in cookie as 'access_token'
+          res.cookie('access_token', token, {
+            maxAge: 3600, // expires after 1 hr
+            httpOnly: true, // cannot be modified using XSS or JS
           });
 
           res.json({ message: 'Success', token: token });
