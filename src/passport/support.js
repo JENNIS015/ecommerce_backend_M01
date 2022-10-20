@@ -28,7 +28,8 @@ function isAdmin(req, res, next) {
     }
     req.token = token;
     req.auth = data;
-    if (req.user.membershipID === 1) {
+    console.log(data)
+    if (data.membershipID === 1) {
       next();
     } else {
       res.sendStatus(403);
