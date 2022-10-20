@@ -69,6 +69,7 @@ class RouterUser {
       }),
       function (req, res) {
         try {
+          console.log(req.user)
           const token = jwt.sign(
             {
               name: req.user.email,
