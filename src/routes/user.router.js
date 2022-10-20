@@ -44,10 +44,10 @@ class RouterUser {
             config.JWT.SECRET
           );
 
-          res.header('auth-token', token).json({
-            error: null,
-            data: { token },
-          });
+          // res.header('auth-token', token).json({
+          //   error: null,
+          //   data: { token },
+          // });
 
           res.cookie('jwt', token, { httpOnly: false });
 
@@ -74,10 +74,10 @@ class RouterUser {
             config.JWT.SECRET
           );
 
-          res.header('auth-token', token).json({
-            error: null,
-            data: { token },
-          });
+          // res.header('auth-token', token).json({
+          //   error: null,
+          //   data: { token },
+          // });
 
           res.cookie('jwt', token, { httpOnly: false });
 

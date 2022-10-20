@@ -2,9 +2,9 @@ const logger = require('../../src/utils/loggers');
 const config = require('../utils/config');
 
 function isAdmin(req, res, next) {
-  const token = req.header('auth-token');
+  const token = req.cookie.jwt;
+  logger.info('token', req.cookie);
   if (!token) return res.status(401).json({ error: 'Acceso denegado' });
-  logger.info('token', token);
 
   try {
     const verified = jwt.verify(token, config.JWT.SECRET);
