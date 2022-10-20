@@ -59,11 +59,11 @@ class RouterUser {
     router.post(
       '/signin',
       passport.authenticate('local-signin', {
-        failureFlash: false,
-        session: true,
+        failureFlash: false
       }),
       function (req, res) {
         try {
+          
 
           const token = jwt.sign(
             {
