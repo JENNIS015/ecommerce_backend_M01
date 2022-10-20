@@ -49,12 +49,12 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 // if (app.get('env') === 'production') {
-  app.set('trust proxy', 1);  
+app.set('trust proxy', 1);
 // }
 const corsOptions = {
   origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3000'],
   credentials: true,
-    optionsSuccessStatus: 200,
+  optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
@@ -66,18 +66,16 @@ const mongooseSessionStore = MongoStore.create({
 
 const COOKIE_SECRET = config.MONGO_DB.MONGO_CONNECT.secret;
 
- 
 app.use(
   session({
     secret: COOKIE_SECRET,
-    resave: true,
-    saveUninitialized: true,
     proxy: true,
     store: mongooseSessionStore,
-    // sameSite: 'none',
+    resave: true,
+    saveUninitialized: false,
     cookie: {
-      secure: true,
-      maxAge: 3600000,
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // must be 'none' to enable cross-site delivery
+      secure: process.env.NODE_ENV === 'production', // must be true if sameSite='none'
     },
   })
 );

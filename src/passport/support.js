@@ -8,6 +8,8 @@ function isAdmin(req, res, next) {
  let bearerToken = null;
  // check if bearer header exists via API request
  let bearerHeader = req.headers['authorization'];
+  logger.info('bearerHeader', bearerHeader);
+ 
  if (typeof bearerHeader !== 'undefined') {
    // authorization: bearer token12345
    bearerToken = bearerHeader.split(' ')[1];
@@ -19,7 +21,7 @@ function isAdmin(req, res, next) {
  // set token from bearer header token or cookieToken
  let token = bearerToken || cookieToken;
 
- jwt.verify(token, SECRET_KEY, (err, data) => {
+ jwt.verify(token, config.JWT.SECRET, (err, data) => {
    if (err) {
      return res.sendStatus(403); // forbidden
    }
