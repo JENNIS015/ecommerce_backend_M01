@@ -50,30 +50,17 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json({ limit: '50mb', extended: true, parameterLimit: 50000 }));
 
-/****  Configurando el cors de forma dinamica */
-if (config.SERVER.entorno == 'development') {
-  app.use(
-    cors({
-      origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3000'],
-      credentials: true,
-    })
-  );
-} else {
-  app.use(
-    cors({
-      origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3000'],
-      optionsSucessStatus: 200,
-      credentials: true,
-    })
-  );
-}
+const corsOptions = {
+  origin: [config.FRONT, config.ADMINPAGE, 'http://localhost:3000'],
+};
+
+app.use(cors(corsOptions));
 
 const mongooseSessionStore = MongoStore.create({
   mongoUrl: config.MONGO_DB.MONGO_CONNECT.url,
   ttl: 3600,
 });
 
-const COOKIE_NAME = 'sid';
 const COOKIE_SECRET = config.MONGO_DB.MONGO_CONNECT.secret;
 
 app.use(cookieParser(COOKIE_SECRET));
@@ -85,7 +72,7 @@ app.use(
     saveUninitialized: true,
     proxy: true,
     store: mongooseSessionStore,
-    sameSite: 'none',
+    // sameSite: 'none',
     cookie: {
       secure: true,
       maxAge: 3600000,
@@ -95,7 +82,7 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
- 
+
 app.use(flash());
 app.use(morgan('dev'));
 
