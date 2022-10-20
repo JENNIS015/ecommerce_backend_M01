@@ -16,7 +16,7 @@ function isAdmin(req, res, next) {
   }
 
   // get cookieToken
-  let cookieToken = req.cookies.access_token?req.cookies.access_token:null;
+  let cookieToken = req.cookies.access_token ? req.cookies.access_token : null;
 
   // set token from bearer header token or cookieToken
   let token = bearerToken || cookieToken;
@@ -27,11 +27,11 @@ function isAdmin(req, res, next) {
     }
     req.token = token;
     req.auth = data;
-     if (req.auth.membershipID === 1) {
+    if (req.user.membershipID === 1) {
       next();
-    
-  }else{
-      return res.sendStatus(403);
+    } else {
+      res.sendStatus(403);
+    }
   });
 
   // const token = req.cookies;
