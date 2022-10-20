@@ -84,11 +84,11 @@ app.use(
     secret: COOKIE_SECRET,
     resave: false,
     saveUninitialized: false,
-    // cookie: {
-    //   maxAge: 1000 * 60 * 60 * 24 * 7, // one day
-    //   secure: false,
-    //   httpOnly: false,
-    // },
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7, // one day
+      secure: false,
+      httpOnly: false,
+    },
   })
 );
 
