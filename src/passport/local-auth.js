@@ -30,76 +30,76 @@ authUser = async (request, accessToken, refreshToken, profile, cb) => {
 
  
  
-passport.use(
-  'local-signup',
-  new LocalStrategy(
-    {
-      usernameField: 'email',
-      passwordField: 'password',
-      passReqToCallback: true,
-    },
-    userController.register
-  )
-);
-passport.use(
-  'local-signin',
-  new LocalStrategy(
-    {
-      usernameField: 'email',
-      passwordField: 'password',
-      passReqToCallback: true,
-    },
-    userController.login
-  )
-);
-passport.use(
-  new JWTStrategy.Strategy(
-    {
-      jwtFromRequest: (req) => {
-        let token = null;
+// passport.use(
+//   'local-signup',
+//   new LocalStrategy(
+//     {
+//       usernameField: 'email',
+//       passwordField: 'password',
+//       passReqToCallback: true,
+//     },
+//     userController.register
+//   )
+// );
+// passport.use(
+//   'local-signin',
+//   new LocalStrategy(
+//     {
+//       usernameField: 'email',
+//       passwordField: 'password',
+//       passReqToCallback: true,
+//     },
+//     userController.login
+//   )
+// );
+// passport.use(
+//   new JWTStrategy.Strategy(
+//     {
+//       jwtFromRequest: (req) => {
+//         let token = null;
 
-        if (req && req.cookies) {
-          token = req.cookies.jwt;
-        }
-        return token;
-      },
-      secretOrKey: config.JWT.SECRET,
-    },
-    (jwtPayload, done) => {
-      if (!jwtPayload) {
-        logger.error('error in jtw');
-        return done('No token found...');
-      }
+//         if (req && req.cookies) {
+//           token = req.cookies.jwt;
+//         }
+//         return token;
+//       },
+//       secretOrKey: config.JWT.SECRET,
+//     },
+//     (jwtPayload, done) => {
+//       if (!jwtPayload) {
+//         logger.error('error in jtw');
+//         return done('No token found...');
+//       }
 
-      return done(null, jwtPayload);
-    }
-  )
-);
-passport.serializeUser(function (user, done) {
-  try {
-    done(null, {
-      name: user.givenName ? user.givenName : user.name,
-      email: user.email ? user.email : user.emails[0].value,
-      membership: user.membershipID ? user.membershipID : 2,
-    });
-  } catch (error) {
-    logger.error('error in deserializeUser', error);
-    done(error);
-  }
-});
+//       return done(null, jwtPayload);
+//     }
+//   )
+// );
+// passport.serializeUser(function (user, done) {
+//   try {
+//     done(null, {
+//       name: user.givenName ? user.givenName : user.name,
+//       email: user.email ? user.email : user.emails[0].value,
+//       membership: user.membershipID ? user.membershipID : 2,
+//     });
+//   } catch (error) {
+//     logger.error('error in deserializeUser', error);
+//     done(error);
+//   }
+// });
 
-passport.deserializeUser(async (user, done) => {
-  try {
-    logger.info('****SESSIONES*******');
-    const userDetail = await userController.existPassport(
-      user.email ? user.email : user._json.email
-    );
+// passport.deserializeUser(async (user, done) => {
+//   try {
+//     logger.info('****SESSIONES*******');
+//     const userDetail = await userController.existPassport(
+//       user.email ? user.email : user._json.email
+//     );
 
-    done(null, {
-      userDetail,
-    });
-  } catch (error) {
-    logger.error('error in deserializeUser', error);
-    done(error);
-  }
-});
+//     done(null, {
+//       userDetail,
+//     });
+//   } catch (error) {
+//     logger.error('error in deserializeUser', error);
+//     done(error);
+//   }
+// });

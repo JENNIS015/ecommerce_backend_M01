@@ -35,7 +35,9 @@ class UserController {
       this.message.errorInternalServer(error, mensaje);
     }
   };
-  register = async (req, email, password, done) => {
+  register = async (req, res) => {
+        const email = req.body.email,
+          password = req.body.password;
     try {
       const user = await this.userDAO.mostrarEmail(email);
       const avatar = req.file ? req.file.filename : null;
@@ -44,7 +46,7 @@ class UserController {
           message: 'The Email is already Taken',
         });
       } else {
-        req.body.email = email;
+ 
         password = bcrypt.hashSync(
           req.body.password,
           bcrypt.genSaltSync(5),
@@ -65,7 +67,7 @@ class UserController {
         };
 
         await this.userDAO.guardar(newUserRegister);
-        done(null, newUserRegister, sendEmail(newUserRegister));
+        return ( newUserRegister, sendEmail(newUserRegister));
       }
     } catch (error) {
       const mensaje = 'Error al crear usuario';
@@ -165,7 +167,7 @@ class UserController {
 
     if (!user) {
       `enter code here`;
-      return res.status(422).send({
+      return res.status(400).send({
         errors: [
           {
             title: 'error',
@@ -187,7 +189,7 @@ class UserController {
       await this.userDAO.guardar(user);
       passwordChange(user.email);
     } else {
-      return res.status(422).send({
+      return res.status(400).send({
         errors: [{ title: 'error', detail: 'Password do not match' }],
       });
     }
@@ -203,22 +205,25 @@ class UserController {
     }
   };
 
-  login = async (req, email, password, done) => {
+  login = async (req, res) => {
+    const email=req.body.email,
+    password=req.body.password
     try {
       const user = await this.userDAO.mostrarEmail(email);
 
       if (!user) {
-        done(null, false, {
-          message: 'No existe el correo registrado',
-        });
+         return res
+           .status(400)
+           .send({ message: 'No existe el correo registrado' }); 
+       
       } else {
         bcrypt.compare(password, user.password, function (err, result) {
           if (result == true) {
-            return done(null, user);
+            return res.status(200).send({ message: 'Login exitoso' }); 
+ 
           } else {
-            done(null, false, {
-              message: 'Contraseña incorrecta',
-            });
+             return res.status(400).send({ message: 'Contraseña incorrecta' }); 
+          
           }
         });
       }

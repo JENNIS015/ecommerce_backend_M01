@@ -25,9 +25,7 @@ class RouterUser {
 
     router.post(
       '/signup',
-      passport.authenticate('local-signup', {
-        failureFlash: true,
-      }),
+     this.controlador.register, 
       (req, res) => {
         try {
           // create token
@@ -51,35 +49,27 @@ class RouterUser {
       }
     );
 
-    router.post(
-      '/signin',
-      passport.authenticate('local-signin', {
-        failureFlash: false
-      }),
-      function (req, res) {
-        try {
-          
+    router.post('/signin',  this.controlador.login, function (req, res) {
+      try {
+        const token = jwt.sign(
+          {
+            name: req.user.email,
+            membershipID: req.user.membershipID,
+          },
+          config.JWT.SECRET
+        );
 
-          const token = jwt.sign(
-            {
-              name: req.user.email,
-              membershipID: req.user.membershipID,
-            },
-            config.JWT.SECRET
-          );
+        // Set jwt token in cookie as 'access_token'
+        res.cookie('access_token', token, {
+          maxAge: 3600, // expires after 1 hr
+          httpOnly: true, // cannot be modified using XSS or JS
+        });
 
-          // Set jwt token in cookie as 'access_token'
-          res.cookie('access_token', token, {
-            maxAge: 3600, // expires after 1 hr
-            httpOnly: true, // cannot be modified using XSS or JS
-          });
-
-          res.json({ message: 'Success', token: token });
-        } catch (err) {
-          res.json({ message: 'Error', err: err });
-        }
+        res.json({ message: 'Success', token: token });
+      } catch (err) {
+        res.json({ message: 'Error', err: err });
       }
-    );
+    });
 
     router.get(
       '/profile/:id',
