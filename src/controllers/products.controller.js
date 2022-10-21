@@ -98,9 +98,10 @@ class ProductsController {
         let imageResponses = await Promise.all(multiplePicturePromise);
         console.log(imageResponses);
 
+        let imageURL = Array.from(imageResponses.map((picture) => picture.secure_url));
         sectionType = await this.ProductsDAO.guardar({
           ...req.body,
-          foto: imageResponses,
+          foto: imageURL,
         });
       } else {
         sectionType = await this.ProductsDAO.guardar({
