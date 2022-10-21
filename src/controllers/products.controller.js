@@ -134,7 +134,7 @@ class ProductsController {
         });
       }
     } catch (error) {
-      next();
+   
     }
 
     await this.ProductsDAO.eliminar('_id', id)
