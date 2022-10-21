@@ -219,8 +219,8 @@ class UserController {
           if (result == true) {
             const token = jwt.sign(
               {
-                name: req.user.email,
-                membershipID: req.user.membershipID,
+                name:  user.email,
+                membershipID:  user.membershipID,
               },
               config.JWT.SECRET
             );
