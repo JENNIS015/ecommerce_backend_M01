@@ -1,7 +1,7 @@
 const ProductDTO = require('../classes/Products/ProductsDTO.class'),
   ProductDAOFactory = require('../classes/Products/ProductDAOFactory.class'),
   APICustom = require('../classes/Error/customError');
- 
+
 const cloudinary = require('cloudinary');
 class ProductsController {
   constructor() {
@@ -88,17 +88,15 @@ class ProductsController {
     try {
       let sectionType;
       let pictureFiles = req.files;
-  console.log(pictureFiles);
+      console.log(pictureFiles);
       if (pictureFiles) {
- 
-
         //map through images and create a promise array using cloudinary upload function
         let multiplePicturePromise = pictureFiles.map((picture) =>
           cloudinary.v2.uploader.upload(picture.path)
         );
         // await all the cloudinary upload functions in promise.all, exactly where the magic happens
         let imageResponses = await Promise.all(multiplePicturePromise);
-       console.log(imageResponses)
+        console.log(imageResponses);
 
         sectionType = await this.ProductsDAO.guardar({
           ...req.body,
