@@ -1,7 +1,6 @@
 const express = require('express'),
   flash = require('connect-flash'),
   bodyParser = require('body-parser'),
-  passport = require('passport'),
   session = require('express-session'),
   MongoStore = require('connect-mongo'),
   cluster = require('cluster'),
@@ -80,8 +79,7 @@ app.use(
   })
 );
 
-app.use(passport.initialize());
-app.use(passport.session());
+
 
 app.use(flash());
 app.use(morgan('dev'));

@@ -1,7 +1,7 @@
 const express = require('express');
 const CategoryController = require('../controllers/category.controller');
 const router = express.Router();
-const { isAdmin } = require('../passport/support');
+const { isAdmin } = require('../auth/support');
 
 class RouterCategory {
   constructor() {

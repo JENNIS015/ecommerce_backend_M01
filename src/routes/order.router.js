@@ -1,7 +1,7 @@
 const express = require('express'),
   router = express.Router(),
   OrderController = require('../controllers/order.controller'),
-  { isAdmin } = require('../passport/support');
+  { isAdmin } = require('../auth/support');
 
 class RouterOrder {
   constructor() {

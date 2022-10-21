@@ -1,7 +1,6 @@
 const APICustom = require('../classes/Error/customError'),
   UserController = require('../controllers/user.controller'),
   router = require('express').Router(),
-  passport = require('passport'),
   config = require('../utils/config.js'),
   jwt = require('jsonwebtoken');
 
@@ -12,7 +11,7 @@ class RouterUser {
   }
 
   start() {
-    require('../passport/local-auth');
+    require('../auth/local-auth');
     const ensureAuthenticated = (req, res, next) => {
       if (ensureAuthenticated) {
         return next();

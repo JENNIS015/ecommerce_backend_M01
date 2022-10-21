@@ -1,4 +1,4 @@
-const logger = require('../../src/utils/loggers');
+const logger = require('../utils/loggers');
 const config = require('../utils/config'),
   jwt = require('jsonwebtoken')
 

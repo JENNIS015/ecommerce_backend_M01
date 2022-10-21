@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const ProductsController = require('../controllers/products.controller');
-const { isAdmin } = require('../passport/support');
+const { isAdmin } = require('../auth/support');
 const { upload } = require('../utils/functions');
 class RouterProduct {
   constructor() {

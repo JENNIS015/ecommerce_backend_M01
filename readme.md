@@ -8,6 +8,6 @@ Contiene acceso a administrador, gestión de ordenes, gestión de nuevos usuario
 
 ## Tecnologias
 Version de Node: v16.14.2
-Tecnologias Utilizadas: Express, JS, MongoDB Atlas, Compression,Passport, JsonWebToken,Handlebars, Nodemailer,MaterialIU
+Tecnologias Utilizadas: Express, JS, MongoDB Atlas, Compression, JsonWebToken,Handlebars, Nodemailer,MaterialIU
  
 
