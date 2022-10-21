@@ -90,13 +90,14 @@ class ProductsController {
       let pictureFiles = req.files;
       //Check if files exist
       if (pictureFiles) {
+
         //map through images and create a promise array using cloudinary upload function
         let multiplePicturePromise = pictureFiles.map((picture) =>
           cloudinary.v2.uploader.upload(picture.path)
         );
         // await all the cloudinary upload functions in promise.all, exactly where the magic happens
         let imageResponses = await Promise.all(multiplePicturePromise);
-        res.status(200).json({ images: imageResponses });
+       console.log(imageResponses)
 
         sectionType = await this.ProductsDAO.guardar({
           ...req.body,
