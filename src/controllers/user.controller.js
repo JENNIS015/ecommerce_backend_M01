@@ -42,9 +42,8 @@ class UserController {
       const user = await this.userDAO.mostrarEmail(email);
       const avatar = req.file ? req.file.filename : null;
       if (user) {
-        done(null, false, {
-          message: 'The Email is already Taken',
-        });
+      res.status(400).json({ message: 'The Email is already Taken' });
+      
       } else {
         password = bcrypt.hashSync(
           req.body.password,
@@ -66,7 +65,20 @@ class UserController {
         };
 
         await this.userDAO.guardar(newUserRegister);
-        return newUserRegister, sendEmail(newUserRegister);
+        sendEmail(newUserRegister);
+
+        const token = jwt.sign(
+          {
+            name: user.email,
+            membershipID: user.membershipID,
+          },
+          config.JWT.SECRET
+        );
+        return res.cookie({ access_token: token }).json({
+          success: true,
+          message: 'LoggedIn Successfully',
+          token: token,
+        });
       }
     } catch (error) {
       const mensaje = 'Error al crear usuario';
@@ -219,15 +231,18 @@ class UserController {
           if (result == true) {
             const token = jwt.sign(
               {
-                name:  user.email,
-                membershipID:  user.membershipID,
+                name: user.email,
+                membershipID: user.membershipID,
               },
               config.JWT.SECRET
             );
-         return res
-           .cookie({ access_token: token })
-           .json({ success: true, message: 'LoggedIn Successfully' });
-        
+            return res
+              .cookie({ access_token: token })
+              .json({
+                success: true,
+                message: 'LoggedIn Successfully',
+                token: token,
+              });
           } else {
             return res.status(400).send({ message: 'Contraseña incorrecta' });
           }
