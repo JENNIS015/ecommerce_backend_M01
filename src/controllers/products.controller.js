@@ -135,7 +135,7 @@ class ProductsController {
         });
       } catch (error) {next()}
     }
-    await this.ProductsDAO.eliminar(_id, id)
+    await this.ProductsDAO.eliminar("_id", id)
       .then(() => {
         res.status(200).send(`Eliminado  ${id}`);
       })
