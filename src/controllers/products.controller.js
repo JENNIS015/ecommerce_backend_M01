@@ -1,8 +1,7 @@
 const ProductDTO = require('../classes/Products/ProductsDTO.class'),
   ProductDAOFactory = require('../classes/Products/ProductDAOFactory.class'),
   APICustom = require('../classes/Error/customError');
-
-const { upload } = require('../utils/functions');
+const { cloudinaryUpload } = require('../utils/functions');
 
 class ProductsController {
   constructor() {
@@ -86,41 +85,41 @@ class ProductsController {
       });
   };
   saveProducts = async (req, res) => {
-    let imageURIs;
     try {
-      if (req.files) {
-              console.log(req.files);
-        // if you are adding multiple files at a go
-        imageURIs = []; // array to hold the image urls
-        const files = req.files; // array of images
-        for (const file of files) {
-          const { path } = file;
-          imageURIs.push(path);
-                       
-        }
+      let sectionType;
+      let pictureFiles = req.files;
+      //Check if files exist
+      if (pictureFiles) {
+        //map through images and create a promise array using cloudinary upload function
+        let multiplePicturePromise = pictureFiles.map((picture) =>
+          cloudinary.v2.uploader.upload(picture.path)
+        );
+        // await all the cloudinary upload functions in promise.all, exactly where the magic happens
+        let imageResponses = await Promise.all(multiplePicturePromise);
+        res.status(200).json({ images: imageResponses });
+
+        sectionType = await this.ProductsDAO.guardar({
+          ...req.body,
+          foto: imageResponses,
+        });
       } else {
-        if (req.file && req.file.path) {
-          // if only one image uploaded
-          imageURIs = req.file.path; // add the single
-        } else {
-          imageURIs = '';
-        }
+        sectionType = await this.ProductsDAO.guardar({
+          ...req.body,
+        });
       }
 
-      const nuevoProducto = await this.ProductsDAO.guardar({
-        ...req.body,
-        foto: imageURIs,
+      res.status(201).json({
+        success: true,
+        id: sectionType,
+        message: 'Producto creado!',
       });
-      console.log(imageURIs)
-      res.json({ msg: 'Product uploaded', success: true, nuevoProducto });
     } catch (error) {
-      this.message.errorInternalServer(
+      res.status(500).send({
+        message: 'failure',
         error,
-        'No se ha podido guardar el producto'
-      );
+      });
     }
   };
-
   deleteProduct = async (req, res) => {
     const product = await this.ProductsDAO.mostrarId(req.params.id);
 

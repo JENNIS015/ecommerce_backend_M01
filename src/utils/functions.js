@@ -26,4 +26,27 @@ const storage = new CloudinaryStorage({
 
 const upload = multer({ storage: storage });
 
-module.exports = { upload };
+const cloudinaryUpload = (file, folder) => {
+  return new Promise((resolve) => {
+    cloudinary.uploader.upload(
+      file,
+      {
+        resource_type: 'auto',
+        folder: folder,
+      },
+      (err, result) => {
+        if (!err) {
+          resolve({
+            url: result.url,
+            public_id: result.public_id,
+          });
+        } else {
+          throw err;
+        }
+      }
+    );
+  }).catch((error) => {
+    throw error;
+  });
+};
+module.exports = { upload, cloudinaryUpload };
