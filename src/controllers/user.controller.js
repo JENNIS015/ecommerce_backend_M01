@@ -224,17 +224,10 @@ class UserController {
               },
               config.JWT.SECRET
             );
-            res.header('auth-token', token).json({
-              error: null,
-              data: { token },
-            });
-            // Set jwt token in cookie as 'access_token'
-            res.cookie('access_token', token, {
-              maxAge: 3600, // expires after 1 hr
-              httpOnly: true, // cannot be modified using XSS or JS
-            });
-
-            res.json({ message: 'Success', token: token });
+         return res
+           .cookie({ access_token: token })
+           .json({ success: true, message: 'LoggedIn Successfully' });
+        
           } else {
             return res.status(400).send({ message: 'Contraseña incorrecta' });
           }
