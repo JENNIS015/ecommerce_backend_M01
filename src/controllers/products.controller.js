@@ -3,6 +3,7 @@ const ProductDTO = require('../classes/Products/ProductsDTO.class'),
   APICustom = require('../classes/Error/customError');
 
 const cloudinary = require('cloudinary');
+const { registerDecorator } = require('handlebars');
 class ProductsController {
   constructor() {
     this.ProductsDAO = ProductDAOFactory.get();
@@ -88,7 +89,6 @@ class ProductsController {
     try {
       let sectionType;
       let pictureFiles = req.files;
-      console.log(pictureFiles);
       if (pictureFiles) {
         //map through images and create a promise array using cloudinary upload function
         let multiplePicturePromise = pictureFiles.map((picture) =>
@@ -96,9 +96,10 @@ class ProductsController {
         );
         // await all the cloudinary upload functions in promise.all, exactly where the magic happens
         let imageResponses = await Promise.all(multiplePicturePromise);
-        console.log(imageResponses);
 
-        let imageURL = Array.from(imageResponses.map((picture) => picture.secure_url));
+        let imageURL = Array.from(
+          imageResponses.map((picture) => picture.public_id)
+        );
         sectionType = await this.ProductsDAO.guardar({
           ...req.body,
           foto: imageURL,
@@ -122,24 +123,25 @@ class ProductsController {
     }
   };
   deleteProduct = async (req, res) => {
-    const product = await this.ProductsDAO.mostrarId(req.params.id);
+    const id = req.params.id;
+    const product = await this.ProductsDAO.mostrarId(id);
 
-    try {
-      if (product.foto) {
-        for (let i = 0; i < product.foto.length; i++) {
-          fs.unlink(
-            './public/uploads/' + product.foto[i].filename,
-            function (err, result) {}
-          );
-        }
-      }
-    } catch (error) {
-      this.message.errorNotFound(error, 'Error al eliminar producto');
+    if (product.foto.length) {
+      try {
+        product.foto.map((item) => {
+          cloudinary.uploader.destroy(item, function (result) {
+            console.log(result);
+          });
+        });
+      } catch (error) {next()}
     }
-
-    await this.ProductsDAO.eliminar('id', req.params.id).then(() => {
-      this.message.infoSimple(`Eliminado ${req.params.id}`);
-    });
+    await this.ProductsDAO.eliminar(_id, id)
+      .then(() => {
+        res.status(200).send(`Eliminado  ${id}`);
+      })
+      .catch((err) => {
+        this.message.errorNotFound(err, 'Error al eliminar  producto');
+      });
   };
 
   editProductImagen = async (req, res) => {
@@ -151,13 +153,7 @@ class ProductsController {
         foto: body.dataObj,
       });
 
-      fs.unlink('./public/uploads/' + body.filename, function (err, result) {
-        if (err)
-          this.message.errorInternalServer(
-            err,
-            ' No se ha podido editar producto'
-          );
-      });
+
     } catch (err) {
       this.message.errorNotFound(err, 'Error al eliminar foto producto');
     }
