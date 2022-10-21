@@ -90,7 +90,7 @@ class ProductsController {
       let pictureFiles = req.files;
       //Check if files exist
       if (pictureFiles) {
-
+       console.log(pictureFiles);
         //map through images and create a promise array using cloudinary upload function
         let multiplePicturePromise = pictureFiles.map((picture) =>
           cloudinary.v2.uploader.upload(picture.path)
