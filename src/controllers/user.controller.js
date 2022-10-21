@@ -36,8 +36,8 @@ class UserController {
     }
   };
   register = async (req, res) => {
-        const email = req.body.email,
-          password = req.body.password;
+    const email = req.body.email,
+      password = req.body.password;
     try {
       const user = await this.userDAO.mostrarEmail(email);
       const avatar = req.file ? req.file.filename : null;
@@ -46,7 +46,6 @@ class UserController {
           message: 'The Email is already Taken',
         });
       } else {
- 
         password = bcrypt.hashSync(
           req.body.password,
           bcrypt.genSaltSync(5),
@@ -67,7 +66,7 @@ class UserController {
         };
 
         await this.userDAO.guardar(newUserRegister);
-        return ( newUserRegister, sendEmail(newUserRegister));
+        return newUserRegister, sendEmail(newUserRegister);
       }
     } catch (error) {
       const mensaje = 'Error al crear usuario';
@@ -206,24 +205,38 @@ class UserController {
   };
 
   login = async (req, res) => {
-    const email=req.body.email,
-    password=req.body.password
+    const email = req.body.email,
+      password = req.body.password;
     try {
       const user = await this.userDAO.mostrarEmail(email);
 
       if (!user) {
-         return res
-           .status(400)
-           .send({ message: 'No existe el correo registrado' }); 
-       
+        return res
+          .status(400)
+          .send({ message: 'No existe el correo registrado' });
       } else {
         bcrypt.compare(password, user.password, function (err, result) {
           if (result == true) {
-            return res.status(200).send({ message: 'Login exitoso' }); 
- 
+            const token = jwt.sign(
+              {
+                name: req.user.email,
+                membershipID: req.user.membershipID,
+              },
+              config.JWT.SECRET
+            );
+            res.header('auth-token', token).json({
+              error: null,
+              data: { token },
+            });
+            // Set jwt token in cookie as 'access_token'
+            res.cookie('access_token', token, {
+              maxAge: 3600, // expires after 1 hr
+              httpOnly: true, // cannot be modified using XSS or JS
+            });
+
+            res.json({ message: 'Success', token: token });
           } else {
-             return res.status(400).send({ message: 'Contraseña incorrecta' }); 
-          
+            return res.status(400).send({ message: 'Contraseña incorrecta' });
           }
         });
       }

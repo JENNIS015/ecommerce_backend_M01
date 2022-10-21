@@ -21,36 +21,9 @@ class RouterUser {
       }
     };
 
-  
-
-    router.post(
-      '/signup',
-     this.controlador.register, 
-      (req, res) => {
-        try {
-          // create token
-          const token = jwt.sign(
-            {
-              name: req.user.email,
-              membershipID: req.user.membershipID,
-            },
-            config.JWT.SECRET
-          );
-
-          // Set jwt token in cookie as 'access_token'
-          res.cookie('access_token', token, {
-            maxAge: 3600, // expires after 1 hr
-            httpOnly: true, // cannot be modified using XSS or JS
-          });
-          res.json({ message: 'Success', token: token });
-        } catch (err) {
-          res.json({ message: 'Error', err: err });
-        }
-      }
-    );
-
-    router.post('/signin',  this.controlador.login, function (req, res) {
+    router.post('/signup', this.controlador.register, (req, res) => {
       try {
+        // create token
         const token = jwt.sign(
           {
             name: req.user.email,
@@ -64,12 +37,13 @@ class RouterUser {
           maxAge: 3600, // expires after 1 hr
           httpOnly: true, // cannot be modified using XSS or JS
         });
-
         res.json({ message: 'Success', token: token });
       } catch (err) {
         res.json({ message: 'Error', err: err });
       }
     });
+
+    router.post('/signin', this.controlador.login)
 
     router.get(
       '/profile/:id',
