@@ -126,7 +126,7 @@ class ProductsController {
     const id = req.params.id;
     const product = await this.ProductsDAO.mostrarId(id);
 
-    if (product.foto.length) {
+    if (product.foto) {
       try {
         product.foto.map((item) => {
           cloudinary.uploader.destroy(item, function (result) {
