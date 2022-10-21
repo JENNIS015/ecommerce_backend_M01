@@ -89,12 +89,14 @@ class ProductsController {
     let imageURIs;
     try {
       if (req.files) {
+              console.log(req.files);
         // if you are adding multiple files at a go
         imageURIs = []; // array to hold the image urls
         const files = req.files; // array of images
         for (const file of files) {
           const { path } = file;
           imageURIs.push(path);
+                       
         }
       } else {
         if (req.file && req.file.path) {
@@ -109,6 +111,7 @@ class ProductsController {
         ...req.body,
         foto: imageURIs,
       });
+      console.log(imageURIs)
       res.json({ msg: 'Product uploaded', success: true, nuevoProducto });
     } catch (error) {
       this.message.errorInternalServer(
