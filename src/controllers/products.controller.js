@@ -125,17 +125,19 @@ class ProductsController {
   deleteProduct = async (req, res) => {
     const id = req.params.id;
     const product = await this.ProductsDAO.mostrarId(id);
-
-    if (product.foto) {
-      try {
+    try {
+      if (product.foto) {
         product.foto.map((item) => {
           cloudinary.uploader.destroy(item, function (result) {
             console.log(result);
           });
         });
-      } catch (error) {next()}
+      }
+    } catch (error) {
+      next();
     }
-    await this.ProductsDAO.eliminar("_id", id)
+
+    await this.ProductsDAO.eliminar('_id', id)
       .then(() => {
         res.status(200).send(`Eliminado  ${id}`);
       })
@@ -152,8 +154,6 @@ class ProductsController {
       const newDetail = await this.ProductsDAO.actualizar(id, {
         foto: body.dataObj,
       });
-
-
     } catch (err) {
       this.message.errorNotFound(err, 'Error al eliminar foto producto');
     }
