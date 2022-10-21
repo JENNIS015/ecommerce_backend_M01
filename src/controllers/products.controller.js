@@ -1,8 +1,8 @@
 const ProductDTO = require('../classes/Products/ProductsDTO.class'),
   ProductDAOFactory = require('../classes/Products/ProductDAOFactory.class'),
   APICustom = require('../classes/Error/customError');
-const { cloudinaryUpload } = require('../utils/functions');
-
+ 
+const cloudinary = require('cloudinary');
 class ProductsController {
   constructor() {
     this.ProductsDAO = ProductDAOFactory.get();
