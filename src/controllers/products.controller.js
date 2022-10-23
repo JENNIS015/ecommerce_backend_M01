@@ -197,15 +197,17 @@ class ProductsController {
     try {
       let sectionType;
       if (req.files.length) {
-        console.log(req.files);
+ 
         let multiplePicturePromise = req.files.map((picture) =>
           cloudinary.v2.uploader.upload(picture.path)
         );
         let imageResponses = await Promise.all(multiplePicturePromise);
-
+        let imageURL = Array.from(
+          imageResponses.map((picture) => picture.public_id)
+        );
         let doc = await this.ProductsDAO.mostrarId(id);
-       console.log("FOTOOOO",(doc.foto));
-        let fotos = (doc.foto).push(imageResponses);
+ 
+        let fotos = doc.foto.concat(imageURL);
 
         sectionType = await this.ProductsDAO.actualizar(id, {
           ...req.body,
