@@ -204,8 +204,8 @@ class ProductsController {
         let imageResponses = await Promise.all(multiplePicturePromise);
 
         let doc = await this.ProductsDAO.mostrarId(id);
-        console.log(doc);
-        let fotos = doc.foto.push(imageResponses);
+        console.log(doc.foto);
+        let fotos = doc.foto.concat(imageResponses);
 
         sectionType = await this.ProductsDAO.actualizar(id, {
           ...req.body,
