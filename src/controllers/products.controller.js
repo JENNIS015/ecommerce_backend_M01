@@ -128,23 +128,24 @@ class ProductsController {
     try {
       if (product.foto) {
         product.foto.map((item) => {
-          console.log('ITEM', item);
+ 
           cloudinary.v2.uploader
-            .destroy('ecommerce/' + item, {
+            .destroy(  item, {
               type: 'upload',
+              invalidate:true,
               resource_type: 'image',
             })
             .then((result) => console.log(result));
         });
       }
 
-      // await this.ProductsDAO.eliminar('_id', id)
-      //   .then(() => {
-      //     res.status(200).send(`Eliminado  ${id}`);
-      //   })
-      //   .catch((err) => {
-      //     this.message.errorNotFound(err, 'Error al eliminar  producto');
-      //   });
+      await this.ProductsDAO.eliminar('_id', id)
+        .then(() => {
+          res.status(200).send(`Eliminado  ${id}`);
+        })
+        .catch((err) => {
+          this.message.errorNotFound(err, 'Error al eliminar  producto');
+        });
     } catch (error) {
       this.message.errorNotFound(err, 'Error al eliminar  producto');
     }
@@ -155,7 +156,7 @@ class ProductsController {
     const id = req.params.id;
     const body = req.body;
 
-    console.log('FOTOS', body.dataObj);
+ 
     try {
       const newDetail = await this.ProductsDAO.actualizar(id, {
         foto: body.dataObj,
@@ -211,7 +212,7 @@ class ProductsController {
 
         let fotos = doc.foto.concat(imageResponses);
 
-        sectionType = await this.ProductsDAO.actualizar(id, { foto: fotos });
+        sectionType = await this.ProductsDAO.actualizar(id, {...req.body, foto: fotos });
 
         res.status(200).send(`Producto actualizado  ${id}`);
       } else {
