@@ -88,11 +88,9 @@ class ProductsController {
   saveProducts = async (req, res) => {
     try {
       let sectionType;
-      let pictureFiles = req.files;
-      if (pictureFiles) {
-        let multiplePicturePromise = pictureFiles.map((picture) =>
-          cloudinary.v2.uploader.upload(picture.path)
-        );
+
+      if (req.files) {
+        let multiplePicturePromise = cloudinary.v2.uploader.upload(req.files);
 
         let imageResponses = await Promise.all(multiplePicturePromise);
 
@@ -196,9 +194,8 @@ class ProductsController {
     let sectionType;
     try {
       if (req.files) {
-        let multiplePicturePromise = req.files.map((picture) =>
-          cloudinary.v2.uploader.upload(picture.path)
-        );
+        let multiplePicturePromise = cloudinary.v2.uploader.upload(req.files);
+
         let imageResponses = await Promise.all(multiplePicturePromise);
 
         let doc = await this.ProductsDAO.mostrarId(id);
