@@ -134,7 +134,9 @@ class ProductsController {
           });
         });
       }
-    } catch (error) {}
+    } catch (error) {
+      this.message.errorNotFound(err, 'Error al eliminar  producto');
+    }
 
     // await this.ProductsDAO.eliminar('_id', id)
     //   .then(() => {
@@ -149,6 +151,7 @@ class ProductsController {
     const id = req.params.id;
     const body = req.body;
 
+    console.log('FOTOS', body.dataObj);
     try {
       const newDetail = await this.ProductsDAO.actualizar(id, {
         foto: body.dataObj,
@@ -191,22 +194,20 @@ class ProductsController {
   editProduct = async (req, res) => {
     const id = req.params.id;
     const body = req.body;
-
+    let sectionType;
     try {
       let pictureFiles = req.files;
       if (pictureFiles) {
-
         let multiplePicturePromise = pictureFiles.map((picture) =>
           cloudinary.v2.uploader.upload(picture.path)
         );
         let imageResponses = await Promise.all(multiplePicturePromise);
 
-        let imageURL = Array.from(
-          imageResponses.map((picture) => picture.public_id)
-        );
-        sectionType = await this.ProductsDAO.guardar({
-          foto: { ...imageURL },
-        });
+        let doc = await this.ProductsDAO.mostrarId(id);
+
+        let fotos = doc.foto.concat(imageResponses);
+
+        sectionType = await this.ProductsDAO.actualizar(id, { foto: fotos });
 
         res.status(200).send(`Producto actualizado  ${id}`, sectionType);
       } else {
