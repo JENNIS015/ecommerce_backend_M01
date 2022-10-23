@@ -90,11 +90,11 @@ class ProductsController {
       let sectionType;
       let pictureFiles = req.files;
       if (pictureFiles) {
-        //map through images and create a promise array using cloudinary upload function
+        
         let multiplePicturePromise = pictureFiles.map((picture) =>
           cloudinary.v2.uploader.upload(picture.path)
         );
-        // await all the cloudinary upload functions in promise.all, exactly where the magic happens
+        
         let imageResponses = await Promise.all(multiplePicturePromise);
 
         let imageURL = Array.from(
@@ -128,10 +128,15 @@ class ProductsController {
     try {
       if (product.foto) {
         product.foto.map((item) => {
-          console.log(item);
-          cloudinary.uploader.destroy(item, function (result) {
-            console.log(result);
-          });
+          cloudinary.uploader.destroy(
+            item,
+            { type: 'upload', resource_type: 'image' },
+            (result) => {
+              console.log(result);
+
+              return result;
+            }
+          );
         });
       }
     } catch (error) {
@@ -209,7 +214,7 @@ class ProductsController {
 
         sectionType = await this.ProductsDAO.actualizar(id, { foto: fotos });
 
-        res.status(200).send(`Producto actualizado  ${id}`, sectionType);
+        res.status(200).send(`Producto actualizado  ${id}`);
       } else {
         await this.ProductsDAO.actualizar(id, body).then(() =>
           res.status(200).send(`Producto actualizado  ${id}`)
