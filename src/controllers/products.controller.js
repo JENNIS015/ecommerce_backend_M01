@@ -88,16 +88,18 @@ class ProductsController {
   saveProducts = async (req, res) => {
     try {
       let sectionType;
-
-      if (req.files) {
-        let multiplePicturePromise = cloudinary.v2.uploader.upload(req.files);
-
+      let pictureFiles = req.files;
+      if (pictureFiles) {
+        //map through images and create a promise array using cloudinary upload function
+        let multiplePicturePromise = pictureFiles.map((picture) =>
+          cloudinary.v2.uploader.upload(picture.path)
+        );
+        // await all the cloudinary upload functions in promise.all, exactly where the magic happens
         let imageResponses = await Promise.all(multiplePicturePromise);
-     console.log("IMAGE",imageResponses)
+
         let imageURL = Array.from(
           imageResponses.map((picture) => picture.public_id)
         );
-        console.log(imageURL);
         sectionType = await this.ProductsDAO.guardar({
           ...req.body,
           foto: imageURL,
@@ -114,12 +116,13 @@ class ProductsController {
         message: 'Producto creado!',
       });
     } catch (error) {
-      res.status(500).json({
+      res.status(500).send({
         message: 'failure',
         error,
       });
     }
   };
+ 
   deleteProduct = async (req, res) => {
     const id = req.params.id;
     const product = await this.ProductsDAO.mostrarId(id);
