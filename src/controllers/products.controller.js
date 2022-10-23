@@ -128,22 +128,21 @@ class ProductsController {
     try {
       if (product.foto) {
         product.foto.map((item) => {
+          console.log(item);
           cloudinary.uploader.destroy(item, function (result) {
             console.log(result);
           });
         });
       }
-    } catch (error) {
-   
-    }
+    } catch (error) {}
 
-    await this.ProductsDAO.eliminar('_id', id)
-      .then(() => {
-        res.status(200).send(`Eliminado  ${id}`);
-      })
-      .catch((err) => {
-        this.message.errorNotFound(err, 'Error al eliminar  producto');
-      });
+    // await this.ProductsDAO.eliminar('_id', id)
+    //   .then(() => {
+    //     res.status(200).send(`Eliminado  ${id}`);
+    //   })
+    //   .catch((err) => {
+    //     this.message.errorNotFound(err, 'Error al eliminar  producto');
+    //   });
   };
 
   editProductImagen = async (req, res) => {
@@ -194,14 +193,24 @@ class ProductsController {
     const body = req.body;
 
     try {
-      if (req.files.length) {
-        let doc = await this.ProductsDAO.mostrarId(id);
-        const fotoNueva = req.files;
-        let fotos = doc.foto.concat(fotoNueva);
-        await this.ProductsDAO.actualizar(id, { foto: fotos });
-        res.status(200).send(`Producto actualizado  ${id}`);
+      let pictureFiles = req.files;
+      if (pictureFiles) {
+
+        let multiplePicturePromise = pictureFiles.map((picture) =>
+          cloudinary.v2.uploader.upload(picture.path)
+        );
+        let imageResponses = await Promise.all(multiplePicturePromise);
+
+        let imageURL = Array.from(
+          imageResponses.map((picture) => picture.public_id)
+        );
+        sectionType = await this.ProductsDAO.guardar({
+          foto: { ...imageURL },
+        });
+
+        res.status(200).send(`Producto actualizado  ${id}`, sectionType);
       } else {
-        await this.ProductsDAO.actualizar(id, body).then((result) =>
+        await this.ProductsDAO.actualizar(id, body).then(() =>
           res.status(200).send(`Producto actualizado  ${id}`)
         );
       }
