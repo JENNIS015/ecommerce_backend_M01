@@ -90,11 +90,10 @@ class ProductsController {
       let sectionType;
       let pictureFiles = req.files;
       if (pictureFiles) {
-        
         let multiplePicturePromise = pictureFiles.map((picture) =>
           cloudinary.v2.uploader.upload(picture.path)
         );
-        
+
         let imageResponses = await Promise.all(multiplePicturePromise);
 
         let imageURL = Array.from(
@@ -128,15 +127,9 @@ class ProductsController {
     try {
       if (product.foto) {
         product.foto.map((item) => {
-          cloudinary.uploader.destroy(
-            item,
-            { type: 'upload', resource_type: 'image' },
-            (result) => {
-              console.log(result);
-
-              return result;
-            }
-          );
+          cloudinary.v2.uploader
+            .destroy(item, { resource_type: 'image' })
+            .then((result) => console.log(result));
         });
       }
     } catch (error) {
