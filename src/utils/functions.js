@@ -11,7 +11,7 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: 'Ecommerce',
+ 
     format: async (req, file) => {
       'jpg', 'png';
     }, // supports promises as well
