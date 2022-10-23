@@ -193,20 +193,20 @@ class ProductsController {
   editProduct = async (req, res) => {
     const id = req.params.id;
     const body = req.body;
-    let sectionType;
+
     try {
-      if (req.files) {
-        console.log(req.files)
-        console.log("REQ",req.files)
+      let sectionType;
+      if (req.files.length) {
+        console.log(req.files);
         let multiplePicturePromise = req.files.map((picture) =>
           cloudinary.v2.uploader.upload(picture.path)
         );
         let imageResponses = await Promise.all(multiplePicturePromise);
 
-        let doc = await this.ProductsDAO.mostrarId(id).then(()=>
-console.log(doc),
-        
- )
+        let doc = await this.ProductsDAO.mostrarId(id);
+        console.log(doc);
+        let fotos = doc.foto.push(imageResponses);
+
         sectionType = await this.ProductsDAO.actualizar(id, {
           ...req.body,
           foto: fotos,
