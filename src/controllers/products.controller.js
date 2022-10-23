@@ -93,7 +93,7 @@ class ProductsController {
         let multiplePicturePromise = cloudinary.v2.uploader.upload(req.files);
 
         let imageResponses = await Promise.all(multiplePicturePromise);
-
+     console.log("IMAGE",imageResponses)
         let imageURL = Array.from(
           imageResponses.map((picture) => picture.public_id)
         );
@@ -114,7 +114,7 @@ class ProductsController {
         message: 'Producto creado!',
       });
     } catch (error) {
-      res.status(500).send({
+      res.status(500).json({
         message: 'failure',
         error,
       });
