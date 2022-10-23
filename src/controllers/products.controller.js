@@ -99,6 +99,7 @@ class ProductsController {
         let imageURL = Array.from(
           imageResponses.map((picture) => picture.public_id)
         );
+        console.log(imageURL);
         sectionType = await this.ProductsDAO.guardar({
           ...req.body,
           foto: imageURL,
@@ -199,9 +200,9 @@ class ProductsController {
     const body = req.body;
     let sectionType;
     try {
-      let pictureFiles = req.files;
-      if (pictureFiles) {
-        let multiplePicturePromise = pictureFiles.map((picture) =>
+ 
+      if (req.files) {
+        let multiplePicturePromise = req.files.map((picture) =>
           cloudinary.v2.uploader.upload(picture.path)
         );
         let imageResponses = await Promise.all(multiplePicturePromise);
