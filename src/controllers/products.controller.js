@@ -127,16 +127,12 @@ class ProductsController {
     const product = await this.ProductsDAO.mostrarId(id);
     try {
       if (product.foto) {
-        product.foto.map((item) => {
- 
-          cloudinary.v2.uploader
-            .destroy(  item, {
-              type: 'upload',
-              invalidate:true,
-              resource_type: 'image',
-            })
-            .then((result) => console.log(result));
-        });
+        cloudinary.v2.api.delete_resources(
+          product.foto,
+          function (error, result) {
+            console.log(result);
+          }
+        );
       }
 
       await this.ProductsDAO.eliminar('_id', id)
@@ -149,14 +145,12 @@ class ProductsController {
     } catch (error) {
       this.message.errorNotFound(err, 'Error al eliminar  producto');
     }
-
   };
 
   editProductImagen = async (req, res) => {
     const id = req.params.id;
     const body = req.body;
 
- 
     try {
       const newDetail = await this.ProductsDAO.actualizar(id, {
         foto: body.dataObj,
@@ -201,7 +195,6 @@ class ProductsController {
     const body = req.body;
     let sectionType;
     try {
- 
       if (req.files) {
         let multiplePicturePromise = req.files.map((picture) =>
           cloudinary.v2.uploader.upload(picture.path)
@@ -210,9 +203,12 @@ class ProductsController {
 
         let doc = await this.ProductsDAO.mostrarId(id);
 
-        let fotos = doc.foto.concat(imageResponses);
+        let fotos = doc.foto.push(imageResponses);
 
-        sectionType = await this.ProductsDAO.actualizar(id, {...req.body, foto: fotos });
+        sectionType = await this.ProductsDAO.actualizar(id, {
+          ...req.body,
+          foto: fotos,
+        });
 
         res.status(200).send(`Producto actualizado  ${id}`);
       } else {
