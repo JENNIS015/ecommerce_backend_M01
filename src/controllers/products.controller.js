@@ -129,21 +129,25 @@ class ProductsController {
         product.foto.map((item) => {
           console.log('ITEM', item);
           cloudinary.v2.uploader
-            .destroy(item, {type:'upload', resource_type: 'image' })
+            .destroy('ecommerce/' + item, {
+              type: 'upload',
+              resource_type: 'image',
+            })
             .then((result) => console.log(result));
         });
       }
+
+      await this.ProductsDAO.eliminar('_id', id)
+        .then(() => {
+          res.status(200).send(`Eliminado  ${id}`);
+        })
+        .catch((err) => {
+          this.message.errorNotFound(err, 'Error al eliminar  producto');
+        });
     } catch (error) {
       this.message.errorNotFound(err, 'Error al eliminar  producto');
     }
 
-    // await this.ProductsDAO.eliminar('_id', id)
-    //   .then(() => {
-    //     res.status(200).send(`Eliminado  ${id}`);
-    //   })
-    //   .catch((err) => {
-    //     this.message.errorNotFound(err, 'Error al eliminar  producto');
-    //   });
   };
 
   editProductImagen = async (req, res) => {
