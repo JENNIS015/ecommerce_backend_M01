@@ -204,8 +204,8 @@ class ProductsController {
 
         let doc = await this.ProductsDAO.mostrarId(id);
 
-        let fotos = doc.foto.concat(imageResponses);
-
+        let fotos = doc.foto.push(imageResponses);
+ 
         sectionType = await this.ProductsDAO.actualizar(id, {
           ...req.body,
           foto: fotos,
