@@ -127,8 +127,9 @@ class ProductsController {
     try {
       if (product.foto) {
         product.foto.map((item) => {
+          console.log('ITEM', item);
           cloudinary.v2.uploader
-            .destroy(item, { resource_type: 'image' })
+            .destroy(item, {type:'upload', resource_type: 'image' })
             .then((result) => console.log(result));
         });
       }
